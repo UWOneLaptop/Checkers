@@ -5,20 +5,20 @@
 GameHasBegun = 0
 RedsTurn = 1
 BlacksTurn = 2
-GameHasEnded = 3
-GameIsPaused = 4
-GameIsResumed = 5
+GameIsPaused = 3
+GameIsResumed = 4
+GameHasEnded = 5
 
 # Class to get and set the game state
-class GameState(object):
-	def get_state(self):
-		return self._state
-		
-	def set_state(self, state):
-		self._state = state
-	
-	state = property(get_state, set_state)
+class GameState():
+        def __init__(self, state=0):
+                self.state = state
 
-# Testing
-GameState.state = BlacksTurn
-print (GameState.state)
+        def reset(self):
+                self.state = 0
+        
+        def get_state(self):
+                return self.state
+                
+        def set_state(self, state):
+                self.state = state
