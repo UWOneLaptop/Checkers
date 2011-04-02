@@ -1,17 +1,5 @@
 This is a Checkers Activity for the Sugar OS. More information will be added as the application is developed. 
 
-Basic Requirements
-------------------------
-Users can play checkers by clicking a mouse to move pieces (not necessarily drag and drop)
-Two players can take turns using the same mouse to play against each other
-Turn order is enforced and invalid moves are not allowed. 
-The board updates accordingly when a piece is jumped or kinged.
-The game recognizes when a player has won
-Players' peices can be easily distinguished visually, even on a black and white screen
-New Game button resets the board
+Currently the GUI is working but virtually none of the backend is implemented. To run the GUI run checkers.py. The name of the GUI file will change, but it is checkers.py for now. 
 
-These requirements should be enough to get a basic application running.
-After the above works, some possible additional features include:
-Scoreboard
-Multiplayer over the network
-AI second player
+CheckerBoard.py has an obsolete ascii version of the GUI. I am leaving it for now for testing purposes, but in the final product the pygtk GUI will be used.
