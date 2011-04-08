@@ -24,8 +24,11 @@ class SquareState:
         
 class CheckerBoard:
     board = []
+	#Number of white pieces
+	#Number of black pieces
     
     def __init__(self):
+		#All initialization
         for col in range(8):
             self.board.append([])
             for row in range(8):
@@ -49,5 +52,37 @@ class CheckerBoard:
             result +="|\n|---|---|---|---|---|---|---|---|\n"
             
         print result
-            
-                
+		
+    # Returns whether or not the game is over 
+    def gameOver(whoseTurn):
+    	if getAllMoves(whoseTurn) == None:
+    		return True
+    	return False
+    	
+	
+	# Returns the colorInt of the winner (-1 if game not over)
+	# Input is the color of the player who most recently had a turn
+	def gameWinner(whoseTurnLast):
+		return Player.RED
+	
+	# Checks to see if the given move is legal (i.e. it is diagonal one square, there is no other
+	# piece in the end point, or it is a jump, etc). 
+	# Inputs are two Point objects: the start point and the end point
+	def checkMove(start, end):
+		return False
+	
+	# Makes the given move.  Returns true if the player has another move, else false
+	# Inputs are two point objects: the start point and the end point
+	def move(start, end):
+		return False
+	
+	# Returns a list of all available Points that can be moved to from Start
+	# Input is a point object
+	def getMoves(start):
+		return None
+	
+	# Returns a list of all possible moves this player can make
+	def getAllMoves(whoseTurn):
+		return None
+	
+	
