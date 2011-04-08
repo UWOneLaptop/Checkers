@@ -1,0 +1,43 @@
+# Language jp translations for PACKAGE package.
+# Copyright (C) 2011 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# yo <faltantornillos@gmail.com>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Checkers 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-04-08 15:08-0700\n"
+"PO-Revision-Date: 2011-04-08 15:25-0800\n"
+"Last-Translator: Daniel Monedero Tórtola <faltantornillos(AT)gmail.com>\n"
+"Language-Team: \n"
+"Language: jp\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Japanese\n"
+
+#: ../checkers.py:13
+msgid "Are you sure you want to delete the current game?"
+msgstr "現在のゲーム削除しますか?"
+
+#: ../checkers.py:27
+msgid "Whites win!"
+msgstr "白が勝つ! "
+
+#: ../checkers.py:30
+msgid "Blacks win!"
+msgstr "黒が勝つ!"
+
+#: ../checkers.py:129
+msgid "Are you sure you want to exit?"
+msgstr "終了しますか?"
+
+#: ../checkers.py:141
+msgid "New Game"
+msgstr "新しいゲーム"
+
+#: ../checkers.py:142
+msgid "Exit"
+msgstr "終了"
+
