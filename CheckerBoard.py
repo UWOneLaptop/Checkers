@@ -24,8 +24,6 @@ class SquareState:
         
 class CheckerBoard:
     board = []
-	#Number of white pieces
-	#Number of black pieces
     
     def __init__(self):
 		#All initialization
