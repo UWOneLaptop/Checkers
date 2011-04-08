@@ -3,5 +3,5 @@ class Point:
 	y = 0
 	
 	def __init__(self, xC, yC):
-		x = xC
-		y = yC
+		self.x = xC
+		self.y = yC

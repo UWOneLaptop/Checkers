@@ -1,4 +1,5 @@
 from CheckerBoard import CheckerBoard
+from Point import Point
 
 class Checkers:
 
@@ -26,7 +27,11 @@ class Checkers:
 		board = CheckerBoard()
 		var = raw_input("Enter something: ")
 		print "you entered ", var
-		board.printBoard()
+		#board.printBoard()
+		
+		p = Point(2, 3)
+		print p.x
+		print p.y
 		
 
 if __name__ == "__main__":
