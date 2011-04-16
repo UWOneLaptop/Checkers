@@ -17,6 +17,8 @@ from gettext import gettext as _
 # French	fr
 
 class CheckersGUI:
+	controller = None
+
 	def new_game(self, widget, data=None):
 		print "Creating new game"
 		dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO, _("Are you sure you want to delete the current game?"))
@@ -32,10 +34,10 @@ class CheckersGUI:
 
 	def win(self):
 		if self.playing == "whites":
-			dialog_image = gtk.image_new_from_file("white_king.svg")
+			dialog_image = gtk.image_new_from_file("images/white_king.svg")
 			string_displayed = _("Whites win!")
 		else:
-			dialog_image = gtk.image_new_from_file("black_king.svg")
+			dialog_image = gtk.image_new_from_file("images/black_king.svg")
 			string_displayed = _("Blacks win!")
 		dialog = gtk.Dialog(string_displayed, None, gtk.DIALOG_MODAL, (gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
 		dialog_label = gtk.Label(string_displayed)
@@ -72,7 +74,7 @@ class CheckersGUI:
 			elif kind == "highlight_king":
 				cell.get_child().set_from_file("images/light_box_white_king_available_black.svg")
 			else:
-				cell.get_child().set_from_file("images/light_box_available_white.svg")
+				cell.get_child().set_from_file("images/light_box_available_black.svg")
 		elif player == "black":
 			if kind == "regular":
 				cell.king = False
@@ -93,7 +95,7 @@ class CheckersGUI:
 			cell.get_child().set_from_file("images/light_box.svg")
 
 	def get_checker(self, row, column):
-		cell = self.table.get_children()[(row*8)+column]
+		cell = self.table.get_children()[(row*8)+(column)]
 		return [cell.king, cell.color]
 
 	def update_counter(self, value):
@@ -107,30 +109,31 @@ class CheckersGUI:
 		return self.delete_event(widget)
 
 	def cell_clicked(self, widget, data=None):
-		print "Cell clicked"
+		self.controller.player_click(widget)
+		
 		# clicked checker variables
-		print widget.row
-		print widget.column
+		#print widget.row
+		#print widget.column
 		# player color
-		print widget.color
+		#print widget.color
 		# is king
-		print widget.king
-		self.set_checker(0, 0, None, None)
-		self.set_checker(1, 0, "regular", "white")
-		self.set_checker(1, 1, "king", "white")
-		self.set_checker(1, 2, "highlight_regular", "white")
-		self.set_checker(1, 3, "highlight_king", "white")
-		self.set_checker(1, 4, None, "white")
-		self.set_checker(2, 0, "regular", "black")
-		self.set_checker(2, 1, "king", "black")
-		self.set_checker(2, 2, "highlight_regular", "black")
-		self.set_checker(2, 3, "highlight_king", "black")
-		self.set_checker(2, 4, None, "black")
+		#print widget.king
+		#self.set_checker(0, 0, None, None)
+		#self.set_checker(1, 0, "regular", "white")
+		#self.set_checker(1, 1, "king", "white")
+		#self.set_checker(1, 2, "highlight_regular", "white")
+		#self.set_checker(1, 3, "highlight_king", "white")
+		#self.set_checker(1, 4, None, "white")
+		#self.set_checker(2, 0, "regular", "black")
+		#self.set_checker(2, 1, "king", "black")
+		#self.set_checker(2, 2, "highlight_regular", "black")
+		#self.set_checker(2, 3, "highlight_king", "black")
+		#self.set_checker(2, 4, None, "black")
 		# returns is_king, player_color
-		print self.get_checker(0, 0)
-		self.update_counter(10)
-		self.win()
-		self.change_turn()
+		#print self.get_checker(0, 0)
+		#self.update_counter(10)
+		#self.win()
+		#self.change_turn()
 
 	def delete_event(self, widget, event=None, data=None):
 		print "destroy signal occurred"
@@ -144,7 +147,9 @@ class CheckersGUI:
 		else:
 			return True
 
-	def __init__(self):
+	def __init__(self, controller):
+		self.controller = controller
+
 		self.playing = "whites"
 		self.new_game_button = gtk.Button(_("New Game"))
 		self.exit_button = gtk.Button(_("Exit"))
@@ -162,6 +167,7 @@ class CheckersGUI:
 		counter = -1
 		blacks = [0, 2, 4, 6, 9, 11, 13, 15, 16, 18, 20, 22]
 		whites = [41, 43, 45, 47, 48, 50, 52, 54, 57, 59, 61, 63]
+		
 		light = False
 		for i in range(8):
 			light = not light
