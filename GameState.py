@@ -1,16 +1,16 @@
 # Game State
 # Josh Scotland
 
-# All the game states as constants
-GameHasBegun = 0
-RedsTurn = 1
-BlacksTurn = 2
-GameIsPaused = 3
-GameIsResumed = 4
-GameHasEnded = 5
-
 # Class to get and set the game state
 class GameState():
+	# All the game states are constants
+	GameHasBegun = 0
+	WhitesTurn = 1
+	BlacksTurn = 2
+	GameIsPaused = 3
+	GameIsResumed = 4
+	GameHasEnded = 5
+
         def __init__(self, state=0):
                 self.state = state
 
