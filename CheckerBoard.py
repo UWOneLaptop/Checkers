@@ -48,10 +48,10 @@ class CheckerBoard:
 	# Makes the given move.  Returns true if the player has another move, else false
 	# Inputs are two point objects: the start point and the end point
 	def move(self, start, end):
-		self.board[end.x][end.y] = self.board[start.x][start.y]
-		self.board[start.x][start.y] = SquareState.EMPTY
-		if anyJump():
-			return True
+		self.board[end.row][end.column] = self.board[start.row][start.column]
+		self.board[start.row][start.column] = SquareState.EMPTY
+		#if anyJump():
+		#	return True
 		return False
 	
 	# Returns a list of all available Points that can be moved to from Start

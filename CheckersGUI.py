@@ -59,7 +59,8 @@ class CheckersGUI:
 			self.p2_box.get_children()[0].set_from_file("images/white_king_active.svg")
 	
 	def set_checker(self, row, column, kind=None, player=None):
-		cell = self.table.get_children()[(row*8)+column]
+		cell = self.table.get_children()[((7-row)*8)+(7-column)]
+		
 		if player == "white":
 			if kind == "regular":
 				cell.king = False
@@ -74,7 +75,7 @@ class CheckersGUI:
 			elif kind == "highlight_king":
 				cell.get_child().set_from_file("images/light_box_white_king_available_black.svg")
 			else:
-				cell.get_child().set_from_file("images/light_box_available_black.svg")
+				cell.get_child().set_from_file("images/light_box_available_white.svg")
 		elif player == "black":
 			if kind == "regular":
 				cell.king = False
@@ -165,10 +166,10 @@ class CheckersGUI:
 		self.table = gtk.Table(8, 8, True)
 		self.ebs =  range( 64 )
 		counter = -1
-		blacks = [0, 2, 4, 6, 9, 11, 13, 15, 16, 18, 20, 22]
-		whites = [41, 43, 45, 47, 48, 50, 52, 54, 57, 59, 61, 63]
+		blacks = [1, 3, 5, 7, 8, 10, 12, 14, 17, 19, 21, 23]
+		whites = [40, 42, 44, 46, 49, 51, 53, 55, 56, 58, 60, 62]
 		
-		light = False
+		light = True
 		for i in range(8):
 			light = not light
 			for j in range(8):
