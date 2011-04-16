@@ -70,7 +70,7 @@ class CheckerBoard:
 		if start.x%2 + start.y%2 != 1 or end.x%2 + end.y%2 !=1:
 			return False
 
-		if not self.board[start.x][start.y] == GameState.get_state()*2-1 or not self.board[end.x][end.y] = SquareState.EMPTY:
+		if not self.board[start.x][start.y] == GameState.get_state()*2-1 or not self.board[end.x][end.y] == SquareState.EMPTY:
 			return False
 
 		if end.y - start.y == abs(end.y - start.y)*(GameState.get_state()*2-3) and not SquareState(start) == 2 and not SquareState(start) == 4:
@@ -81,11 +81,11 @@ class CheckerBoard:
 
 		if abs(end.y - start.y) == 2 and abs(end.x - start.x) == 2 and self.board[(start.x + end.x)/2][(start.y + end.y)/2] == 3 - GameState.get_state():
 			return True
-    return False    
-	
+    		return False
+
 	# Makes the given move.  Returns true if the player has another move, else false
 	# Inputs are two point objects: the start point and the end point
-	def move(start, end):
+	def move(self, start, end):
 		self.board[end.x][end.y] = self.board[start.x][start.y]
 		self.board[start.x][start.y] = SquareState.EMPTY
 		if anyJump():
@@ -105,11 +105,11 @@ class CheckerBoard:
 	# Return ture if there are any pieces that can jump
 	def anyJump(self):
 		for row in range(len(self.board)):
-            for col in range(len(self.board[row])):
-			start = new Point(row, col)
-			step = 0
-			if canJump(start, step):
-				return true
+			for col in range(len(self.board[row])):
+				start = Point(row, col)
+				step = 0
+				if canJump(start, step):
+					return true
 		return False
     
 	# private function 	
@@ -124,10 +124,10 @@ class CheckerBoard:
 		if step == 3:
 			x = start.x + 2
 			y = start.y + 2
-		elif mode = 2:
+		elif mode == 2:
 			x = start.x + 2
 			y = start.y - 2
-		elif mode = 1:
+		elif mode == 1:
 			x = start.x - 2
 			y = start.y + 2
 		else:

@@ -49,12 +49,12 @@ class CheckersGUI:
 	def change_turn(self):
 		if self.playing == "whites":
 			self.playing = "blacks"
-			self.p1_box.get_children()[0].set_from_file("black_king_active.svg")
-			self.p2_box.get_children()[0].set_from_file("white_king.svg")
+			self.p1_box.get_children()[0].set_from_file("images/black_king_active.svg")
+			self.p2_box.get_children()[0].set_from_file("images/white_king.svg")
 		else:
 			self.playing = "whites"
-			self.p1_box.get_children()[0].set_from_file("black_king.svg")
-			self.p2_box.get_children()[0].set_from_file("white_king_active.svg")
+			self.p1_box.get_children()[0].set_from_file("images/black_king.svg")
+			self.p2_box.get_children()[0].set_from_file("images/white_king_active.svg")
 	
 	def set_checker(self, row, column, kind=None, player=None):
 		cell = self.table.get_children()[(row*8)+column]
@@ -62,35 +62,35 @@ class CheckersGUI:
 			if kind == "regular":
 				cell.king = False
 				cell.color = 'white'
-				cell.get_child().set_from_file("light_box_white_piece.svg")
+				cell.get_child().set_from_file("images/light_box_white_piece.svg")
 			elif kind == "king":
 				cell.king = True
 				cell.color = 'white'
-				cell.get_child().set_from_file("light_box_white_king.svg")
+				cell.get_child().set_from_file("images/light_box_white_king.svg")
 			elif kind == "highlight_regular":
-				cell.get_child().set_from_file("light_box_white_piece_available_black.svg")
+				cell.get_child().set_from_file("images/light_box_white_piece_available_black.svg")
 			elif kind == "highlight_king":
-				cell.get_child().set_from_file("light_box_white_king_available_black.svg")
+				cell.get_child().set_from_file("images/light_box_white_king_available_black.svg")
 			else:
-				cell.get_child().set_from_file("light_box_available_white.svg")
+				cell.get_child().set_from_file("images/light_box_available_white.svg")
 		elif player == "black":
 			if kind == "regular":
 				cell.king = False
 				cell.color = 'black'
-				cell.get_child().set_from_file("light_box_black_piece.svg")
+				cell.get_child().set_from_file("images/light_box_black_piece.svg")
 			elif kind == "king":
 				cell.king = True
 				cell.color = 'black'
-				cell.get_child().set_from_file("light_box_black_king.svg")
+				cell.get_child().set_from_file("images/light_box_black_king.svg")
 			elif kind == "highlight_regular":
-				cell.get_child().set_from_file("light_box_black_piece_available_white.svg")
+				cell.get_child().set_from_file("images/light_box_black_piece_available_white.svg")
 			elif kind == "highlight_king":
-				cell.get_child().set_from_file("light_box_black_king_available_white.svg")
+				cell.get_child().set_from_file("images/light_box_black_king_available_white.svg")
 			else:
-				cell.get_child().set_from_file("light_box_available_white.svg")
+				cell.get_child().set_from_file("images/light_box_available_white.svg")
 		else:
 			cell.color = 'none'
-			cell.get_child().set_from_file("light_box.svg")
+			cell.get_child().set_from_file("images/light_box.svg")
 
 	def get_checker(self, row, column):
 		cell = self.table.get_children()[(row*8)+column]
@@ -173,17 +173,17 @@ class CheckersGUI:
 				
 				if counter in blacks:
 					if light == True:
-						self.ebs[counter].add(gtk.image_new_from_file('light_box_black_piece.svg'))
+						self.ebs[counter].add(gtk.image_new_from_file('images/light_box_black_piece.svg'))
 					self.ebs[counter].color = 'black'
 				elif counter in whites:
 					if light == True:
-						self.ebs[counter].add(gtk.image_new_from_file('light_box_white_piece.svg'))
+						self.ebs[counter].add(gtk.image_new_from_file('images/light_box_white_piece.svg'))
 					self.ebs[counter].color = 'white'
 				else:
 					if light == True:
-						self.ebs[counter].add(gtk.image_new_from_file('light_box.svg'))
+						self.ebs[counter].add(gtk.image_new_from_file('images/light_box.svg'))
 					else:
-						self.ebs[counter].add(gtk.image_new_from_file('dark_box.svg'))
+						self.ebs[counter].add(gtk.image_new_from_file('images/dark_box.svg'))
 					self.ebs[counter].color = 'none'
 				self.ebs[counter].light = light
 				light = not light
@@ -192,8 +192,8 @@ class CheckersGUI:
 				self.ebs[counter].connect("button_press_event", self.cell_clicked)
 				self.table.attach(self.ebs[counter], j, j+1, i, i+1)
 		
-		self.black_king_image.set_from_file('black_king.svg')
-		self.white_king_image.set_from_file('white_king.svg')
+		self.black_king_image.set_from_file('images/black_king.svg')
+		self.white_king_image.set_from_file('images/white_king.svg')
 		
 		self.left_label.set_markup('<span size="xx-large">0</span>')
 		self.right_label.set_markup('<span size="xx-large">0</span>')

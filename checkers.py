@@ -1,5 +1,6 @@
 from CheckerBoard import CheckerBoard
 from Point import Point
+from CheckersGUI import CheckersGUI
 
 class Checkers:
 
@@ -36,4 +37,5 @@ class Checkers:
 
 if __name__ == "__main__":
 	checkers = Checkers()
+	#checkersView = CheckersGUI()
 	checkers.main()
