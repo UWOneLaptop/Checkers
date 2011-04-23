@@ -13,6 +13,22 @@ class CheckerBoard:
 					self.board[col].append(SquareState.WHITE)
 				else:
 					self.board[col].append(SquareState.EMPTY)
+		
+
+		
+	"""
+	This method is used for printing the board in ascii. It is only useful until the GUI is built.
+	Remove for production
+	"""     	
+	def printBoard(self): 	
+		result = "|---|---|---|---|---|---|---|---|\n"
+		for row in range(len(self.board)): 	
+			for col in range(len(self.board[0])):
+				result += "|" + SquareState.printSquare(self.board[col][row],(row+col)%2==0)
+			result +="|\n|---|---|---|---|---|---|---|---|\n"
+		print result
+
+
 	# Returns whether or not the game is over 
 	def gameOver(whoseTurn):
 		if getAllMoves(whoseTurn) == None:
@@ -48,11 +64,11 @@ class CheckerBoard:
 	# Makes the given move.  Returns true if the player has another move, else false
 	# Inputs are two point objects: the start point and the end point
 	def move(self, start, end):
-		self.board[end.row][end.column] = self.board[start.row][start.column]
-		self.board[start.row][start.column] = SquareState.EMPTY
+		self.board[end.column][end.row] = self.board[start.column][start.row]
+		self.board[start.column][start.row] = SquareState.EMPTY
 		#if anyJump():
 		#	return True
-		return False
+		return True
 	
 	# Returns a list of all available Points that can be moved to from Start
 	# Input is a point object
