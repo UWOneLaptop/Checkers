@@ -48,36 +48,62 @@ class Checkers:
 		if not self.last_clicked==None:
 			# Look up the piece to move
 			last_cell = self.board.board[self.last_clicked.column][self.last_clicked.row]
-			
-			# Display the old square as empty
-			self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "none", "none")
-			
-			# Display the piece in the new square
-			if last_cell == SquareState.WHITE:
-				self.view.set_checker(widget.row, widget.column, "regular", "white")
-			elif last_cell == SquareState.WHITEKING:
-				self.view.set_checker(widget.row, widget.column, "king", "white") 
-			elif last_cell == SquareState.BLACK:
-				self.view.set_checker(widget.row, widget.column, "regular", "black")
-			elif last_cell == SquareState.BLACKKING:
-				self.view.set_checker(widget.row, wodget.column, "king", "black")
-			
+						
 			# Store the move into start and end points to be passed to the player
-			start = self.last_clicked
-			end = Point(widget.row, widget.column)	
+			start = Point(self.last_clicked.column, self.last_clicked.row)
+			end = Point(widget.column, widget.row)	
 
-			# Listen for next move
-			self.last_clicked = None
+			
+			#Make the move
 			if self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.Human_Player):
-				return_code = self.white_player.turn(start, end, self.board)
+				
+				#Send the move to the board
+				return_code = self.white_player.turn(start, end, self.board, self.state)
+				
+				#If it succeeds, update the view
 				if return_code == Player.TURN_COMPLETE or return_code == Player.JUMP_AVAILABLE:
+					# Display the old square as empty
+					self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "none", "none")
+					
+					#Display the piece in the new square					
+					if last_cell == SquareState.WHITE:
+						self.view.set_checker(widget.row, widget.column, "regular", "white")
+					elif last_cell == SquareState.WHITEKING: 
+						self.view.set_checker(widget.row, widget.column, "king", "white")
+					
+					#Next turn
 					self.state.set_state(GameState.BlacksTurn)
+				else:
+					#If the move was not valid, unhighlight the previous cell
+					if last_cell == SquareState.WHITE:
+						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "regular", "white")
+					elif last_cell == SquareState.WHITEKING: 
+						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "king", "white")
 
 				# TODO: Send messages for invalid moves or jumps available
 			elif self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.Human_Player):
-				return_code = self.black_player.turn(start, end, self.board) 
+				return_code = self.black_player.turn(start, end, self.board, self.state) 
 				if return_code == Player.TURN_COMPLETE or return_code == Player.JUMP_AVAILABLE:
+					#Display the old square as empty
+					self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "none", "none")
+
+					#Displaye the piece in the new square
+					if last_cell == SquareState.BLACK:
+						self.view.set_checker(widget.row, widget.column, "regular", "black")
+					elif last_cell == SquareState.BLACKKING:
+						self.view.set_checker(widget.row, widget.column, "king", "black")
+
+					#Next turn
 					self.state.set_state(GameState.WhitesTurn)
+				else:
+					if last_cell == SquareState.BLACK:
+						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "regular", "black")
+					elif last_cell == SquareState.BLACKKING:
+						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "king", "black")	
+			# Listen for next move
+			self.last_clicked = None
+
+					
 
 		# If we are here this is the first click. The user is selecting  a piece to move. Only 
 		# allow them to select their own pieces. Otherwise ignore the click

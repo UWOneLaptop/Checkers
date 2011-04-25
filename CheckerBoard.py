@@ -64,6 +64,7 @@ class CheckerBoard:
 		self.board[end.row][end.column] = self.board[start.row][start.column]
 		self.board[start.row][start.column] = SquareState.EMPTY
 		step = 0
+		#TODO: Shouldn't check for jumps unless the move just made was a jump
 		if self.anyJump(game_state):
 			return True
 		return False

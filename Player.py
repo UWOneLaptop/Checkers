@@ -23,13 +23,16 @@ class Human_Player():
 	# is valid (by using the board's methods) and then update the board with that move. 
 	# 
 	# Returns a code indicating if the turn is over, and the reason if it is not
-	def turn(self, start, end, board):
-		if not board.move(start, end):
+	def turn(self, start, end, board, state):
+		if not board.checkMove(start, end, state):
+			print "returning move invalid"
 			return MOVE_INVALID
 
-		#Check for jumps when code is available
-			# if jumps available return JUMP_AVAILABLE
+		if board.move(start, end, state):
+			print "jump available"
+			return JUMP_AVAILABLE
 
+		print "turn complete"
 		return TURN_COMPLETE
 
 
