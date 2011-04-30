@@ -1,4 +1,6 @@
 from SquareState import SquareState
+from Point import Point
+from math import*
 
 class CheckerBoard:
 	board = []
@@ -13,97 +15,108 @@ class CheckerBoard:
 					self.board[col].append(SquareState.WHITE)
 				else:
 					self.board[col].append(SquareState.EMPTY)
+		
+
+		
+	"""
+	This method is used for printing the board in ascii. It is only useful until the GUI is built.
+	Remove for production
+	"""     	
+	def printBoard(self): 	
+		result = "|---|---|---|---|---|---|---|---|\n"
+		for row in range(len(self.board)): 	
+			for col in range(len(self.board[0])):
+				result += "|" + SquareState.printSquare(self.board[col][row],(row+col)%2==0)
+			result +="|\n|---|---|---|---|---|---|---|---|\n"
+		print result
+
+
 	# Returns whether or not the game is over 
-	def gameOver(whoseTurn):
-		if getAllMoves(whoseTurn) == None:
-			return True
-		return False
+	def gameOver(self, game_state):
+		return self.getAllMoves(game_state) == None
     	
 	
 	# Returns the colorInt of the winner (-1 if game not over)
 	# Input is the color of the player who most recently had a turn
-	def gameWinner(whoseTurnLast):
-		return Player.WHITE
+	def gameWinner(self, game_state):
+		if game_state.get_state()== 5:
+			return game_state.get_state
+		else: return -1
 	
 	# Checks to see if the given move is legal.  
 	# Inputs are two Point objects: the start point and the end point
-	# Pre: 1)start and end are points in the 8*8 board 2)GameState.get_state() is 1 or 2 (either player is playing)
-	def checkMove(self, start, end):
-		if start.x%2 + start.y%2 != 1 or end.x%2 + end.y%2 !=1:
+	# Pre: 1)start and end are points in the 8*8 board 2)State is correct (either player is playing)
+	def checkMove(self, start, end, game_state):
+		if start.row%2 + start.column%2 != 1 or end.row%2 + end.column%2 !=1:
 			return False
-
-		if not self.board[start.x][start.y] == GameState.get_state()*2-1 or not self.board[end.x][end.y] == SquareState.EMPTY:
+		if not (self.board[start.row][start.column]+1)//2 == game_state.get_state() or not self.board[end.row][end.column] == SquareState.EMPTY:
 			return False
-
-		if end.y - start.y == abs(end.y - start.y)*(GameState.get_state()*2-3) and not SquareState(start) == 2 and not SquareState(start) == 4:
+		if not end.column - start.column == abs(end.column - start.column)*(game_state.get_state()*2-3) and not self.board[start.row][start.column] == SquareState.WHITEKING and not self.board[start.row][start.column] == SquareState.BLACKKING:
 			return False
-
-		if abs(end.y - start.y) == 1 and abs(end.x - start.x) == 1 and not anyJump(GameState.get_state()):
+		if abs(end.column - start.column) == 1 and abs(end.row - start.row) == 1 and not self.anyJump(game_state):
 			return True
+		return abs(end.column - start.column) == 2 and abs(end.row - start.row) == 2 and self.board[(start.row + end.row)/2][(start.column + end.column)/2] == 5 - game_state.get_state()*2
 
-		if abs(end.y - start.y) == 2 and abs(end.x - start.x) == 2 and self.board[(start.x + end.x)/2][(start.y + end.y)/2] == 3 - GameState.get_state():
-			return True
-    		return False
 
 	# Makes the given move.  Returns true if the player has another move, else false
 	# Inputs are two point objects: the start point and the end point
-	def move(self, start, end):
+	def move(self, start, end, game_state):
 		self.board[end.row][end.column] = self.board[start.row][start.column]
 		self.board[start.row][start.column] = SquareState.EMPTY
-		#if anyJump():
-		#	return True
+		step = 0
+		#TODO: Shouldn't check for jumps unless the move just made was a jump
+		if self.anyJump(game_state):
+			return True
 		return False
 	
 	# Returns a list of all available Points that can be moved to from Start
 	# Input is a point object
-	def getMoves(start):
-		return None
+	def getMoves(self,start,game_state):
+		possibleMoves = []
+		for step in range(8):
+			x = int(start.row + (step//4+1)*cos(pi/4+pi/2*step)/abs(cos(pi/4+pi/2*step)))
+			y = int(start.column + (step//4+1)*sin(pi/4+pi/2*step)/abs(sin(pi/4+pi/2*step)))
+			if x <= 7 and x >= 0 and y <= 7 and y >= 0:
+				end = Point(x,y)
+				if self.checkMove(start,end,game_state):
+					possibleMoves.append(end)
+		return possibleMoves
 	
+	# Pre: Game state is BlacksTurn or WhitesTurn
 	# Returns a list of all possible moves this player can make
-	def getAllMoves(whoseTurn):
-		return None
-	
-	# private function 
-	# Return ture if there are any pieces that can jump
-	def anyJump(self):
+	def getAllMoves(self, game_state):
+		moves = []
 		for row in range(len(self.board)):
 			for col in range(len(self.board[row])):
 				start = Point(row, col)
-				step = 0
-				if canJump(start, step):
-					return true
+				availbleMoves = self.getMoves(start, game_state)
+				if not not availbleMoves:
+					for end in availbleMoves:
+						moves.append([start,end])
+		return moves
+				
+	# private function 
+	# Return ture if there are any pieces that can jump
+	def anyJump(self, game_state):
+		for row in range(len(self.board)):
+			for col in range(len(self.board[row])):
+				start = Point(row, col)
+				if self.canJumps(start, 0, game_state):
+					return True
 		return False
     
 	# private function 	
 	# Return true if user can any jump from a particular start
-	def canJumps(self, start):
+	def canJumps(self, start, step, game_state):
 		if step == 4:
 			return False
-		if start.x%2 + start.y%2 != 1 or x%2 + y%2 !=1:
+		if not (self.board[start.row][start.column]+1)//2 == game_state.get_state():
 			return False
-		if not self.board[start.x][start.y] == GameState.get_state()*2-1:
-			return False
-		if step == 3:
-			x = start.x + 2
-			y = start.y + 2
-		elif mode == 2:
-			x = start.x + 2
-			y = start.y - 2
-		elif mode == 1:
-			x = start.x - 2
-			y = start.y + 2
-		else:
-			x = start.x - 2
-			y = start.y - 2
+		x = int(start.row + 2*cos(pi/4+pi/2*step)/abs(cos(pi/4+pi/2*step)))
+		y = int(start.column + 2*sin(pi/4+pi/2*step)/abs(sin(pi/4+pi/2*step)))
 		if x <= 7 and x >= 0 and y <= 7 and y >= 0:
-			if end.y - start.y != abs(end.y - start.y)*(GameState.get_state()*2-3) or SquareState(start) == 2 or SquareState(start) == 4:
-				if abs(end.y - start.y) == 2 and abs(end.x - start.x) == 2 and self.board[(start.x + end.x)/2][(start.y + end.y)/2] == 3 - GameState.get_state():
-					if self.board[end.x][end.y] != SquareState.EMPTY:
+			if y - start.column == abs(y - start.column)*(game_state.get_state()*2-3) or self.board[start.row][start.column] == SquareState.WHITEKING or self.board[start.row][start.column] == SquareState.BLACKKING:
+				if self.board[(start.row + x)/2][(start.column + y)/2] == 5 - game_state.get_state()*2:
+					if self.board[x][y] == SquareState.EMPTY and self.board[start.row][start.column] != SquareState.EMPTY:
 						return True
-		step += 1
-			
-			
-	
-
-	
-	
+		return True and self.canJumps(start, step+1,game_state)
