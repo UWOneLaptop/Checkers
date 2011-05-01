@@ -87,7 +87,7 @@ class Checkers:
 					#Display the old square as empty
 					self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "none", "none")
 
-					#Displaye the piece in the new square
+					#Display the piece in the new square
 					if last_cell == SquareState.BLACK:
 						self.view.set_checker(widget.row, widget.column, "regular", "black")
 					elif last_cell == SquareState.BLACKKING:
@@ -99,7 +99,31 @@ class Checkers:
 					if last_cell == SquareState.BLACK:
 						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "regular", "black")
 					elif last_cell == SquareState.BLACKKING:
-						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "king", "black")	
+						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "king", "black")		
+                        #AI will play for black
+			if self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.AI_Player):
+                                ## self.board.printBoard()
+                                moves = self.board.getAllMoves(self.state)
+                                ## print len(moves)
+                                ## print moves
+                                move = moves.pop()
+                                end = move.pop()
+                                start = move.pop()
+                                last_cell = self.board.board[start.row][start.column]
+                                return_code = self.black_player.turn(start, end, self.board, self.state) 
+				#Display the old square as empty
+				self.view.set_checker(start.column, start.row, "none", "none")
+
+				#Display the piece in the new square
+				if last_cell == SquareState.BLACK:
+					self.view.set_checker(end.column, end.row, "regular", "black")
+				elif last_cell == SquareState.BLACKKING:
+					self.view.set_checker(end.column, end.row, "king", "black")
+				else:
+                                        print "Error: The starting square is not a black piece"
+				#Next turn
+				self.state.set_state(GameState.WhitesTurn)
+				self.board.printBoard()
 			# Listen for next move
 			self.last_clicked = None
 
@@ -133,7 +157,7 @@ class Checkers:
 		self.view = CheckersGUI(self)
 		self.state = GameState(GameState.WhitesTurn)
 		self.white_player = Player.Human_Player(Player.WHITE)
-		self.black_player = Player.Human_Player(Player.BLACK)
+		self.black_player = Player.AI_Player(Player.BLACK)
 
 if __name__ == "__main__":
 	checkers = Checkers()
