@@ -32,7 +32,7 @@ class Human_Player():
 			print "jump available"
 			return JUMP_AVAILABLE
 
-		print "turn complete"
+		print "player turn complete"
 		return TURN_COMPLETE
 
 
@@ -46,5 +46,12 @@ class AI_Player():
 	def __init__(self, color):
 		self.color = color
 	
-	def turn(self, board):
-		print "Not yet defined. Need a valid moves method"
+	def turn(self, start, end, board, state):
+                print "Start: " + str(start.row) + ", " + str(start.column)
+                print "End: " + str(end.row) + ", " + str(end.column)
+		if board.move(start, end, state):
+                        #self.turn(start, end, board, state)
+                        print "AI should move again, but this is not implemented"
+		print "AI turn complete"
+		return TURN_COMPLETE
+		

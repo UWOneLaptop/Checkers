@@ -49,7 +49,7 @@ class CheckerBoard:
 	def checkMove(self, start, end, game_state):
 		if start.row%2 + start.column%2 != 1 or end.row%2 + end.column%2 !=1:
 			return False
-		if not (self.board[start.row][start.column]+1)//2 == game_state.get_state() or not self.board[end.row][end.column] == SquareState.EMPTY:
+		if not (self.board[start.row][start.column]+1)/2 == game_state.get_state() or not self.board[end.row][end.column] == SquareState.EMPTY:
 			return False
 		if not end.column - start.column == abs(end.column - start.column)*(game_state.get_state()*2-3) and not self.board[start.row][start.column] == SquareState.WHITEKING and not self.board[start.row][start.column] == SquareState.BLACKKING:
 			return False
