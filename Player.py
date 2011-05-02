@@ -1,10 +1,7 @@
+from Move import Move
 
 WHITE = 1
 BLACK = 2
-
-TURN_COMPLETE = 0
-MOVE_INVALID = 1
-JUMP_AVAILABLE = 2
 
 # The Player classes take turns in games of checkers. They are called by checkers.py
 
@@ -26,14 +23,9 @@ class Human_Player():
 	def turn(self, start, end, board, state):
 		if not board.checkMove(start, end, state):
 			print "returning move invalid"
-			return MOVE_INVALID
+			return Move.MOVE_INVALID
 
-		if board.move(start, end, state):
-			print "jump available"
-			return JUMP_AVAILABLE
-
-		print "player turn complete"
-		return TURN_COMPLETE
+		return board.move(start, end, state)
 
 
 # The AI player searches the board for the best move available. It only takes the board
@@ -42,16 +34,37 @@ class Human_Player():
 class AI_Player():
 	
 	color = None
+	checkers = None
 	#Constructor
-	def __init__(self, color):
+	def __init__(self, color, checkers):
 		self.color = color
+		self.checkers = checkers
 	
-	def turn(self, start, end, board, state):
-                print "Start: " + str(start.row) + ", " + str(start.column)
-                print "End: " + str(end.row) + ", " + str(end.column)
-		if board.move(start, end, state):
-                        #self.turn(start, end, board, state)
-                        print "AI should move again, but this is not implemented"
+	def turn(self, board, state):
+		moves = board.getAllMoves(state)
+		if not moves:
+			return
+		move = moves.pop()
+		end = move.pop()
+		start = move.pop()
+		last_cell = board.board[start.row][start.column]
+
+		return_code = board.move(start, end, state)
+		self.checkers.move(start, end, last_cell, return_code)
+
+		while return_code == Move.JUMP_AVAILABLE:
+			moves = board.getAllMoves(state)
+			if not moves:
+				break
+			move = moves.pop()
+			end = move.pop()
+			start = move.pop()
+			last_cell = board.board[start.row][start.column]
+
+			return_code = board.move(start, end, state)
+			self.checkers.move(start, end, last_cell, return_code)
+			
 		print "AI turn complete"
-		return TURN_COMPLETE
+
+		
 		

@@ -7,15 +7,6 @@ import sys
 import os
 from gettext import gettext as _
 
-# need to work folloowing http://wiki.laptop.org/go/Python_i18n
-# language	locale
-# English	en
-# Spanish	es
-# Catalan	ca
-# Chinese	zh
-# Japanese	ja
-# French	fr
-
 class CheckersGUI:
 	controller = None
 

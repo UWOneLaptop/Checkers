@@ -3,6 +3,7 @@ from Point import Point
 from CheckersGUI import CheckersGUI
 from GameState import GameState
 from SquareState import SquareState
+from Move import Move
 import Player
 
 import pygtk
@@ -54,80 +55,37 @@ class Checkers:
 			end = Point(widget.column, widget.row)	
 
 			
-			#Make the move
+			#Make Human Move
 			if self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.Human_Player):
-				
-				#Send the move to the board
 				return_code = self.white_player.turn(start, end, self.board, self.state)
-				
-				#If it succeeds, update the view
-				if return_code == Player.TURN_COMPLETE or return_code == Player.JUMP_AVAILABLE:
-					# Display the old square as empty
-					self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "none", "none")
-					
-					#Display the piece in the new square					
-					if last_cell == SquareState.WHITE:
-						self.view.set_checker(widget.row, widget.column, "regular", "white")
-					elif last_cell == SquareState.WHITEKING: 
-						self.view.set_checker(widget.row, widget.column, "king", "white")
-					
-					#Next turn
-					self.state.set_state(GameState.BlacksTurn)
-				else:
-					#If the move was not valid, unhighlight the previous cell
-					if last_cell == SquareState.WHITE:
-						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "regular", "white")
-					elif last_cell == SquareState.WHITEKING: 
-						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "king", "white")
+				self.move(start, end, last_cell, return_code)
 
 				# TODO: Send messages for invalid moves or jumps available
 			elif self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.Human_Player):
-				return_code = self.black_player.turn(start, end, self.board, self.state) 
-				if return_code == Player.TURN_COMPLETE or return_code == Player.JUMP_AVAILABLE:
-					#Display the old square as empty
-					self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "none", "none")
-
-					#Display the piece in the new square
-					if last_cell == SquareState.BLACK:
-						self.view.set_checker(widget.row, widget.column, "regular", "black")
-					elif last_cell == SquareState.BLACKKING:
-						self.view.set_checker(widget.row, widget.column, "king", "black")
-
-					#Next turn
-					self.state.set_state(GameState.WhitesTurn)
-				else:
-					if last_cell == SquareState.BLACK:
-						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "regular", "black")
-					elif last_cell == SquareState.BLACKKING:
-						self.view.set_checker(self.last_clicked.row, self.last_clicked.column, "king", "black")		
-                        #AI will play for black
-			if self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.AI_Player):
-                                ## self.board.printBoard()
+				return_code = self.black_player.turn(start, end, self.board, self.state)
+				self.move(start, end, last_cell, return_code)
+		
+			
+                        #Make AI Move
+			if self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.AI_Player):
                                 moves = self.board.getAllMoves(self.state)
-                                ## print len(moves)
-                                ## print moves
                                 move = moves.pop()
                                 end = move.pop()
                                 start = move.pop()
                                 last_cell = self.board.board[start.row][start.column]
-                                return_code = self.black_player.turn(start, end, self.board, self.state) 
-				#Display the old square as empty
-				self.view.set_checker(start.column, start.row, "none", "none")
+				self.move(start, end, last_cell, self.white_player)
+			if self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.AI_Player):
+				self.black_player.turn(self.board, self.state)
 
-				#Display the piece in the new square
-				if last_cell == SquareState.BLACK:
-					self.view.set_checker(end.column, end.row, "regular", "black")
-				elif last_cell == SquareState.BLACKKING:
-					self.view.set_checker(end.column, end.row, "king", "black")
-				else:
-                                        print "Error: The starting square is not a black piece"
-				#Next turn
-				self.state.set_state(GameState.WhitesTurn)
-				self.board.printBoard()
 			# Listen for next move
 			self.last_clicked = None
 
-					
+		print "Checking for winner"
+		if self.board.gameOver(self.state):
+			print "Game over"
+			winner = self.board.gameOver(self.state)
+			print "Winner is: " + str(winner)
+			self.view.win()		
 
 		# If we are here this is the first click. The user is selecting  a piece to move. Only 
 		# allow them to select their own pieces. Otherwise ignore the click
@@ -149,6 +107,49 @@ class Checkers:
 				self.last_clicked = Point(widget.row, widget.column)
 	
 		
+	def move(self, start, end, last_cell, return_code):
+		#If the move was not valid, unhighlight the previous cell	
+		if return_code == Move.MOVE_INVALID:
+			if last_cell == SquareState.WHITE:
+				self.view.set_checker(start.column, start.row, "regular", "white")
+			elif last_cell == SquareState.WHITEKING: 
+				self.view.set_checker(start.column, start.row, "king", "white")
+		else:
+			# Move was successful. Display the old square as empty
+			self.view.set_checker(start.column, start.row, "none", "none")
+			
+			#If the piece was kinged, display it as a king
+			if return_code == Move.KINGED or return_code == Move.JUMPED_AND_KINGED:
+				if last_cell == SquareState.WHITE:
+					self.view.set_checker(end.column, end.row, "king", "white")
+				elif last_cell == SquareState.BLACK:
+					self.view.set_checker(end.column, end.row, "king", "black")
+			else:
+				#Display the piece in the new square					
+				if last_cell == SquareState.WHITE:
+					self.view.set_checker(end.column, end.row, "regular", "white")
+				elif last_cell == SquareState.WHITEKING: 
+					self.view.set_checker(end.column, end.row, "king", "white")
+				elif last_cell == SquareState.BLACK:
+					self.view.set_checker(end.column, end.row, "regular", "black")
+				elif last_cell == SquareState.BLACKKING:
+					self.view.set_checker(end.column, end.row, "king", "black")
+
+			#If a piece was jumped, remove it from the board
+			if return_code == Move.JUMPED or return_code == Move.JUMP_AVAILABLE or return_code == Move.JUMPED_AND_KINGED:
+				self.view.set_checker((start.column+end.column)/2, (start.row+end.row)/2, "none", "none")
+			
+			#If there is no jump availble: next turn
+			if not return_code == Move.JUMP_AVAILABLE:
+				if self.state.get_state() == GameState.WhitesTurn:
+					print "Black's Turn"
+					self.state.set_state(GameState.BlacksTurn)
+				else:
+					print "White's Turn"
+					self.state.set_state(GameState.WhitesTurn)
+			
+
+
 	def main(self):
 		gtk.main()
 
@@ -157,7 +158,7 @@ class Checkers:
 		self.view = CheckersGUI(self)
 		self.state = GameState(GameState.WhitesTurn)
 		self.white_player = Player.Human_Player(Player.WHITE)
-		self.black_player = Player.AI_Player(Player.BLACK)
+		self.black_player = Player.AI_Player(Player.BLACK, self)
 
 if __name__ == "__main__":
 	checkers = Checkers()

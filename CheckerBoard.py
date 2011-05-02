@@ -1,5 +1,6 @@
 from SquareState import SquareState
 from Point import Point
+from Move import Move
 from math import*
 
 class CheckerBoard:
@@ -19,7 +20,7 @@ class CheckerBoard:
 
 		
 	"""
-	This method is used for printing the board in ascii. It is only useful until the GUI is built.
+	This method is used for printing the board in ascii. It is only useful as a debugging tool.
 	Remove for production
 	"""     	
 	def printBoard(self): 	
@@ -61,13 +62,43 @@ class CheckerBoard:
 	# Makes the given move.  Returns true if the player has another move, else false
 	# Inputs are two point objects: the start point and the end point
 	def move(self, start, end, game_state):
+		jumped = False
+		kinged = False
+		jump_available = False
+
+		#Make the move
 		self.board[end.row][end.column] = self.board[start.row][start.column]
 		self.board[start.row][start.column] = SquareState.EMPTY
-		step = 0
-		#TODO: Shouldn't check for jumps unless the move just made was a jump
+		
+		#Check if it was a jump
+		if abs(start.row - end.row) == 2:
+			self.board[(start.row+end.row)/2][(start.column+end.column)/2] = SquareState.EMPTY
+			jumped = True
+
+		#Check if the piece was kinged
+		if end.column == 7 and game_state.get_state() == 2:
+			self.board[end.row][end.column] = SquareState.BLACKKING
+			kinged = True
+		elif end.column == 0 and game_state.get_state() == 1:
+			self.board[end.row][end.column] = SquareState.WHITEKING
+			kinged = True
+
+		#Check if there are jumps available
 		if self.anyJump(game_state):
-			return True
-		return False
+			jump_available = True
+		
+		self.printBoard()		
+
+		if kinged and jumped:
+			return Move.JUMPED_AND_KINGED
+		elif kinged and not jumped:
+			return Move.KINGED
+		elif (not kinged) and jumped and jump_available:
+			return Move.JUMP_AVAILABLE
+		elif (not kinged) and jumped and (not jump_available):
+			return Move.JUMPED
+		elif (not kinged) and (not jumped):
+			return Move.TURN_COMPLETE
 	
 	# Returns a list of all available Points that can be moved to from Start
 	# Input is a point object
