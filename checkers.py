@@ -33,6 +33,10 @@ class Checkers:
 	# can be AI or human
 	white_player = None
 	black_player = None
+
+	# Win counts for the two players
+	white_win_count = 0
+	black_win_count = 0
 	
 
 	# This method is called when the user clicks a box in the GUI. This could be called at any time,
@@ -80,13 +84,6 @@ class Checkers:
 			# Listen for next move
 			self.last_clicked = None
 
-		print "Checking for winner"
-		if self.board.gameOver(self.state):
-			print "Game over"
-			winner = self.board.gameOver(self.state)
-			print "Winner is: " + str(winner)
-			self.view.win()		
-
 		# If we are here this is the first click. The user is selecting  a piece to move. Only 
 		# allow them to select their own pieces. Otherwise ignore the click
 		elif self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.Human_Player):
@@ -114,6 +111,10 @@ class Checkers:
 				self.view.set_checker(start.column, start.row, "regular", "white")
 			elif last_cell == SquareState.WHITEKING: 
 				self.view.set_checker(start.column, start.row, "king", "white")
+			elif last_cell == SquareState.BLACK:
+				self.view.set_checker(start.column, start.row, "regular", "black")
+			elif last_cell == SquareState.BLACKKING: 
+				self.view.set_checker(start.column, start.row, "king", "black")
 		else:
 			# Move was successful. Display the old square as empty
 			self.view.set_checker(start.column, start.row, "none", "none")
@@ -142,11 +143,25 @@ class Checkers:
 			#If there is no jump availble: next turn
 			if not return_code == Move.JUMP_AVAILABLE:
 				if self.state.get_state() == GameState.WhitesTurn:
-					print "Black's Turn"
 					self.state.set_state(GameState.BlacksTurn)
+
+					#Check if white won
+					if self.board.gameOver(self.state):
+						self.white_win_count = self.white_win_count + 1	
+						self.view.update_counter(self.white_win_count)
+						self.view.win_color("whites")					
+					
+					self.view.change_turn_color("whites")
 				else:
-					print "White's Turn"
 					self.state.set_state(GameState.WhitesTurn)
+
+					if self.board.gameOver(self.state):
+						self.black_win_count = self.black_win_count + 1	
+						self.view.update_counter(self.black_win_count)
+						self.view.win_color("blacks")	
+
+					
+					self.view.change_turn_color("blacks")
 			
 
 
@@ -159,6 +174,8 @@ class Checkers:
 		self.state = GameState(GameState.WhitesTurn)
 		self.white_player = Player.Human_Player(Player.WHITE)
 		self.black_player = Player.AI_Player(Player.BLACK, self)
+		self.white_win_count = 0
+		self.black_win_count = 0
 
 if __name__ == "__main__":
 	checkers = Checkers()

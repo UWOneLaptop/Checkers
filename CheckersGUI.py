@@ -23,6 +23,11 @@ class CheckersGUI:
 		else:
 			return False
 
+	
+	def win_color(self, color):
+		self.playing =color
+		self.win()	
+
 	def win(self):
 		if self.playing == "whites":
 			dialog_image = gtk.image_new_from_file("images/white_king.svg")
@@ -39,6 +44,10 @@ class CheckersGUI:
 		dialog.run()
 		dialog.destroy()
 	
+	def change_turn_color(self, color):
+		self.playing = color
+		self.change_turn()
+
 	def change_turn(self):
 		if self.playing == "whites":
 			self.playing = "blacks"

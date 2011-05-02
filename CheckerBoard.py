@@ -34,7 +34,7 @@ class CheckerBoard:
 
 	# Returns whether or not the game is over 
 	def gameOver(self, game_state):
-		return self.getAllMoves(game_state) == None
+		return not self.getAllMoves(game_state)
     	
 	
 	# Returns the colorInt of the winner (-1 if game not over)
