@@ -1,4 +1,4 @@
-This is a Checkers Activity for the Sugar OS. More information will be added as the application is developed. 
+\This is a Checkers Activity for the Sugar OS. More information will be added as the application is developed. 
 
 Currently the GUI is working but virtually none of the backend is implemented. To run the GUI run checkers.py. The name of the GUI file will change, but it is checkers.py for now. 
 
