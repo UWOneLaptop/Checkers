@@ -87,7 +87,7 @@ class CheckerBoard:
 		if self.anyJump(game_state):
 			jump_available = True
 		
-		self.printBoard()		
+		#self.printBoard()		
 
 		if kinged and jumped:
 			return Move.JUMPED_AND_KINGED
@@ -127,7 +127,7 @@ class CheckerBoard:
 		return moves
 				
 	# private function 
-	# Return ture if there are any pieces that can jump
+	# Return true if there are any pieces that can jump
 	def anyJump(self, game_state):
 		for row in range(len(self.board)):
 			for col in range(len(self.board[row])):
@@ -151,3 +151,33 @@ class CheckerBoard:
 					if self.board[x][y] == SquareState.EMPTY and self.board[start.row][start.column] != SquareState.EMPTY:
 						return True
 		return True and self.canJumps(start, step+1,game_state)
+
+        # Determines the board's value for the AI to choose the best
+	def getValue(self, game_state):
+                whiteValue = 0
+                blackValue = 0
+                for row in range(len(self.board)):
+                        for col in range(len(self.board[row])):
+                                if self.board[row][col] == SquareState.WHITE:
+                                        whiteValue += 1
+                                elif self.board[row][col] == SquareState.WHITEKING:
+                                        whiteValue += 3
+                                elif self.board[row][col] == SquareState.BLACK:
+                                        blackValue += 1
+                                elif self.board[row][col] == SquareState.BLACKKING:
+                                        blackValue += 3
+                if game_state.get_state()== 1:
+                        return whiteValue - blackValue
+                elif game_state.get_state()== 2:
+                        return blackValue - whiteValue
+                else:
+                        print "Not in a valid state to check board value"
+
+        def copy(self):
+                copy = []
+                for row in range(len(self.board)):
+                        copy.append([])
+                        for col in range(len(self.board[row])):
+                                copy[col].append(self.board[col])
+                return copy
+                                
