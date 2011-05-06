@@ -1,6 +1,7 @@
 from Move import Move
 import copy
 from GameState import GameState
+import random
 
 WHITE = 1
 BLACK = 2
@@ -55,6 +56,7 @@ class AI_Player():
 		updateGUI = 0
 
 		# search for the next best move
+		random.shuffle(moves)
 		for move in moves:
                         board.board = copy.deepcopy(board_orig)
                         
