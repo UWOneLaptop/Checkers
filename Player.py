@@ -1,4 +1,7 @@
 from Move import Move
+import copy
+from GameState import GameState
+import random
 
 WHITE = 1
 BLACK = 2
@@ -44,15 +47,92 @@ class AI_Player():
 		moves = board.getAllMoves(state)
 		if not moves:
 			return
-		move = moves.pop()
-		end = move.pop()
-		start = move.pop()
-		last_cell = board.board[start.row][start.column]
 
-		return_code = board.move(start, end, state)
+                # variables for finding the best move for this turn
+		board_orig = copy.deepcopy(board.board)
+		value_best = -99
+		end_best = 0
+		start_best = 0
+		updateGUI = 0
+
+		# search for the next best move
+		random.shuffle(moves)
+		for move in moves:
+                        board.board = copy.deepcopy(board_orig)
+                        
+                        end = move.pop()
+                        start = move.pop()
+                        last_cell = board.board[start.row][start.column]
+                        return_code = board.move(start, end, state)
+                        self.jumpAgain(board, state, return_code, updateGUI)
+
+                        # now play the other player's move
+                        if (state.get_state() == 2):
+                                state_other = GameState(GameState.WhitesTurn)
+                                self.turn_other(board, state_other)
+                        elif (state.get_state() == 1):
+                                state_other = GameState(GameState.BlacksTurn)
+                                self.turn_other(board, state_other)
+                        else:
+                                print "Invalid player state"
+                        
+                        value = board.getValue(state)
+                        print value
+                        if value > value_best:
+                                value_best = value
+                                end_best = end
+                                start_best = start
+
+                # we found it so actually make the move
+                updateGUI = 1
+                board.board = copy.deepcopy(board_orig)
+                print "CHOOSE THIS MOVE"
+                print value_best
+                last_cell = board.board[start_best.row][start_best.column]
+                return_code = board.move(start, end, state)
 		self.checkers.move(start, end, last_cell, return_code)
+		self.jumpAgain(board, state, return_code, updateGUI)
 
-		while return_code == Move.JUMP_AVAILABLE:
+		board.printBoard()
+		print "AI turn complete"
+
+
+        def turn_other(self, board, state):
+		moves = board.getAllMoves(state)
+		if not moves:
+			return
+
+                # variables for finding the best move for this turn
+		board_orig = copy.deepcopy(board.board)
+		value_best = -99
+		end_best = 0
+		start_best = 0
+		updateGUI = 0
+
+		# search for the next best move
+		for move in moves:
+                        board.board = copy.deepcopy(board_orig)
+                        
+                        end = move.pop()
+                        start = move.pop()
+                        last_cell = board.board[start.row][start.column]
+                        return_code = board.move(start, end, state)
+                        self.jumpAgain(board, state, return_code, updateGUI)
+                        
+                        value = board.getValue(state)
+                        if value > value_best:
+                                value_best = value
+                                end_best = end
+                                start_best = start
+
+                # we found it so actually make the move
+                board.board = copy.deepcopy(board_orig)
+                return_code = board.move(start, end, state)
+		self.jumpAgain(board, state, return_code, updateGUI)
+
+		
+        def jumpAgain(self, board, state, return_code, updateGUI):
+                while return_code == Move.JUMP_AVAILABLE:
 			moves = board.getAllMoves(state)
 			if not moves:
 				break
@@ -62,9 +142,5 @@ class AI_Player():
 			last_cell = board.board[start.row][start.column]
 
 			return_code = board.move(start, end, state)
-			self.checkers.move(start, end, last_cell, return_code)
-			
-		print "AI turn complete"
-
-		
-		
+			if updateGUI:
+                                self.checkers.move(start, end, last_cell, return_code)
