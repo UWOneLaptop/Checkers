@@ -24,7 +24,7 @@ class Checkers:
 		
 		cell = self.board.board[widget.column][widget.row]
 			
-		# This condition checks is the user is on the second click (already selected a piece
+		# This condition checks if the user is on the second click (already selected a piece
 		# in their first click). This click is meant to place the piece
 		if not self.last_clicked==None:
 			# Look up the piece to move
@@ -47,13 +47,17 @@ class Checkers:
 		
 			
                         #Make AI Move
+			"""
 			if self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.AI_Player):
                                 moves = self.board.getAllMoves(self.state)
                                 move = moves.pop()
                                 end = move.pop()
                                 start = move.pop()
                                 last_cell = self.board.board[start.row][start.column]
-				self.move(start, end, last_cell, self.white_player)
+				self.move(start, end, last_cell, self.white_player)	
+			"""
+			if self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.AI_Player):
+				self.white_player.turn(self.board, self.state)
 			if self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.AI_Player):
 				self.black_player.turn(self.board, self.state)
 
@@ -147,24 +151,39 @@ class Checkers:
 		self.state = GameState(GameState.WhitesTurn)
 		self.last_clicked = None
 		
-		self.white_player = Player.Human_Player(Player.WHITE)
-		self.black_player = Player.AI_Player(Player.BLACK, self)
-		
-	def set_ai(self, ai_state):
-		ai_active = ai_state
-		if ai_active and ai_color == Player.WHITE:
+		if self.ai_active and self.ai_color == Player.WHITE:
 			self.white_player = Player.AI_Player(Player.WHITE, self)
 			self.black_player = Player.Human_Player(Player.BLACK)
-		elif ai_active and ai_color == Player.BLACK:
+		elif self.ai_active and self.ai_color == Player.BLACK:
 			self.white_player = Player.Human_Player(Player.WHITE)
 			self.black_player = Player.AI_Player(Player.BLACK, self)
 		else:
 			self.white_player = Player.Human_Player(Player.WHITE)
 			self.black_player = Player.Human_Player(Player.BLACK)
 		
+	def set_ai(self, ai_state):
+		self.ai_active = ai_state
+		if self.ai_active and self.ai_color == Player.WHITE:
+			self.white_player = Player.AI_Player(Player.WHITE, self)
+			self.black_player = Player.Human_Player(Player.BLACK)
+
+			if self.state.get_state() == GameState.WhitesTurn:
+				self.white_player.turn(self.board, self.state)
+				
+		elif self.ai_active and self.ai_color == Player.BLACK:
+			self.white_player = Player.Human_Player(Player.WHITE)
+			self.black_player = Player.AI_Player(Player.BLACK, self)
+
+			if self.state.get_state() == GameState.BlacksTurn:
+				self.black_player.turn(self.board, self.state)
+
+		else:
+			self.white_player = Player.Human_Player(Player.WHITE)
+			self.black_player = Player.Human_Player(Player.BLACK)
+		
 	def set_ai_color(self, color):
-		ai_color = color
-		self.set_ai(ai_active)
+		self.ai_color = color
+		self.set_ai(self.ai_active)
 
 	def main(self):
 		gtk.main()
@@ -178,7 +197,7 @@ class Checkers:
 		self.white_win_count = 0
 		self.black_win_count = 0
 		self.last_clicked = None
-		self.ai_active = False
+		self.ai_active = True
 		self.ai_color = Player.BLACK
 
 if __name__ == "__main__":

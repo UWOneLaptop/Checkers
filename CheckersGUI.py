@@ -7,6 +7,8 @@ import sys
 import os
 from gettext import gettext as _
 
+import Player
+
 class CheckersGUI:
 
 	def new_game(self, widget, data=None):
@@ -52,13 +54,13 @@ class CheckersGUI:
 
 	def change_player_color(self, widget, data=None):
 		if (self.player_color_button.get_active()):
-			self.player_color_button.set_label(_("AI Player Color: White"))
+			self.player_color_button.set_label(_("Player Color: Black"))
 			self.controller.set_ai_color(Player.WHITE)
-			print "White AI player color selected"
+			print "Black player color selected"
 		else:
-			self.player_color_button.set_label(_("AI Player Color: Black"))
+			self.player_color_button.set_label(_("Player Color: White"))
 			self.controller.set_ai_color(Player.BLACK)
-			print "Black AI player color selected"
+			print "White player color selected"
 	
 	def win_color(self, color):
 		self.playing =color
