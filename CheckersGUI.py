@@ -22,7 +22,22 @@ class CheckersGUI:
 			return True
 		else:
 			return False
+			
+	def change_ai(self, widget, data=None):
+		if (self.ai_button.get_active()):
+			self.ai_button.set_label(_("Player vs Player"))
+			self.player_color_button.hide()
+		else:
+			self.ai_button.set_label(_("Player vs PC"))
+			self.player_color_button.show()
 
+	def change_player_color(self, widget, data=None):
+		if (self.player_color_button.get_active()):
+			self.player_color_button.set_label(_("Player Color: Black"))
+			print "Black player color selected"
+		else:
+			self.player_color_button.set_label(_("Player Color: White"))
+			print "White player color selected"
 	
 	def win_color(self, color):
 		self.playing =color
@@ -153,6 +168,8 @@ class CheckersGUI:
 
 		self.playing = "whites"
 		self.new_game_button = gtk.Button(_("New Game"))
+		self.ai_button = gtk.ToggleButton(_("Player vs PC"))
+		self.player_color_button = gtk.ToggleButton(_("Player Color: White"))
 		self.exit_button = gtk.Button(_("Exit"))
 		self.top_box = gtk.HBox(False, 0)
 		self.checkers_box = gtk.HBox(False, 0)
@@ -209,9 +226,13 @@ class CheckersGUI:
 		self.window.set_title('Checkers')
 		self.window.connect("delete_event", self.delete_event)
 		self.new_game_button.connect("clicked", self.new_game, None)
+		self.ai_button.connect("clicked", self.change_ai, None)
+		self.player_color_button.connect("clicked", self.change_player_color, None)
 		self.exit_button.connect("clicked", self.exit, None)
 		
 		self.top_box.pack_start(self.new_game_button, False, False, 5)
+		self.top_box.pack_start(self.ai_button, False, False, 5)
+		self.top_box.pack_start(self.player_color_button, False, False, 5)
 		self.top_box.pack_end(self.exit_button, False, False, 5)
 		self.main_box.pack_start(self.top_box, False, True, 5)
 		self.p1_box.pack_start(self.black_king_image, False, False, 0)
