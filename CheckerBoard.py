@@ -4,7 +4,6 @@ from Move import Move
 from math import*
 
 class CheckerBoard:
-
 	def __init__(self):
 	#All initialization
 		self.board = []

@@ -47,15 +47,6 @@ class Checkers:
 		
 			
                         #Make AI Move
-			"""
-			if self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.AI_Player):
-                                moves = self.board.getAllMoves(self.state)
-                                move = moves.pop()
-                                end = move.pop()
-                                start = move.pop()
-                                last_cell = self.board.board[start.row][start.column]
-				self.move(start, end, last_cell, self.white_player)	
-			"""
 			if self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.AI_Player):
 				self.white_player.turn(self.board, self.state)
 			if self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.AI_Player):
@@ -151,6 +142,7 @@ class Checkers:
 		self.state = GameState(GameState.WhitesTurn)
 		self.last_clicked = None
 		
+		#Reset the AI to the correct settings
 		if self.ai_active and self.ai_color == Player.WHITE:
 			self.white_player = Player.AI_Player(Player.WHITE, self)
 			self.black_player = Player.Human_Player(Player.BLACK)
@@ -160,13 +152,18 @@ class Checkers:
 		else:
 			self.white_player = Player.Human_Player(Player.WHITE)
 			self.black_player = Player.Human_Player(Player.BLACK)
-		
+	
+	#Set the AI on or off. Reset the player objects accordingly	
 	def set_ai(self, ai_state):
 		self.ai_active = ai_state
+
+		#If turning AI on and white is the AI player, set white player to AI and 
+		#black player to human
 		if self.ai_active and self.ai_color == Player.WHITE:
 			self.white_player = Player.AI_Player(Player.WHITE, self)
 			self.black_player = Player.Human_Player(Player.BLACK)
 
+			#If its whites turn, since white is AI, have white take its turn
 			if self.state.get_state() == GameState.WhitesTurn:
 				self.white_player.turn(self.board, self.state)
 				
@@ -177,6 +174,7 @@ class Checkers:
 			if self.state.get_state() == GameState.BlacksTurn:
 				self.black_player.turn(self.board, self.state)
 
+		#If ai is off set both players to human
 		else:
 			self.white_player = Player.Human_Player(Player.WHITE)
 			self.black_player = Player.Human_Player(Player.BLACK)
