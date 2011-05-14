@@ -7,16 +7,9 @@ import sys
 import os
 from gettext import gettext as _
 
-# need to work folloowing http://wiki.laptop.org/go/Python_i18n
-# language	locale
-# English	en
-# Spanish	es
-# Catalan	ca
-# Chinese	zh
-# Japanese	ja
-# French	fr
-
 class CheckersGUI:
+	controller = None
+
 	def new_game(self, widget, data=None):
 		print "Creating new game"
 		dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO, _("Are you sure you want to delete the current game?"))
@@ -30,12 +23,17 @@ class CheckersGUI:
 		else:
 			return False
 
+	
+	def win_color(self, color):
+		self.playing =color
+		self.win()	
+
 	def win(self):
 		if self.playing == "whites":
-			dialog_image = gtk.image_new_from_file("white_king.svg")
+			dialog_image = gtk.image_new_from_file("images/white_king.svg")
 			string_displayed = _("Whites win!")
 		else:
-			dialog_image = gtk.image_new_from_file("black_king.svg")
+			dialog_image = gtk.image_new_from_file("images/black_king.svg")
 			string_displayed = _("Blacks win!")
 		dialog = gtk.Dialog(string_displayed, None, gtk.DIALOG_MODAL, (gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
 		dialog_label = gtk.Label(string_displayed)
@@ -46,54 +44,59 @@ class CheckersGUI:
 		dialog.run()
 		dialog.destroy()
 	
+	def change_turn_color(self, color):
+		self.playing = color
+		self.change_turn()
+
 	def change_turn(self):
 		if self.playing == "whites":
 			self.playing = "blacks"
-			self.p1_box.get_children()[0].set_from_file("black_king_active.svg")
-			self.p2_box.get_children()[0].set_from_file("white_king.svg")
+			self.p1_box.get_children()[0].set_from_file("images/black_king_active.svg")
+			self.p2_box.get_children()[0].set_from_file("images/white_king.svg")
 		else:
 			self.playing = "whites"
-			self.p1_box.get_children()[0].set_from_file("black_king.svg")
-			self.p2_box.get_children()[0].set_from_file("white_king_active.svg")
+			self.p1_box.get_children()[0].set_from_file("images/black_king.svg")
+			self.p2_box.get_children()[0].set_from_file("images/white_king_active.svg")
 	
 	def set_checker(self, row, column, kind=None, player=None):
-		cell = self.table.get_children()[(row*8)+column]
+		cell = self.table.get_children()[((7-row)*8)+(7-column)]
+		
 		if player == "white":
 			if kind == "regular":
 				cell.king = False
 				cell.color = 'white'
-				cell.get_child().set_from_file("light_box_white_piece.svg")
+				cell.get_child().set_from_file("images/light_box_white_piece.svg")
 			elif kind == "king":
 				cell.king = True
 				cell.color = 'white'
-				cell.get_child().set_from_file("light_box_white_king.svg")
+				cell.get_child().set_from_file("images/light_box_white_king.svg")
 			elif kind == "highlight_regular":
-				cell.get_child().set_from_file("light_box_white_piece_available_black.svg")
+				cell.get_child().set_from_file("images/light_box_white_piece_available_black.svg")
 			elif kind == "highlight_king":
-				cell.get_child().set_from_file("light_box_white_king_available_black.svg")
+				cell.get_child().set_from_file("images/light_box_white_king_available_black.svg")
 			else:
-				cell.get_child().set_from_file("light_box_available_white.svg")
+				cell.get_child().set_from_file("images/light_box_available_white.svg")
 		elif player == "black":
 			if kind == "regular":
 				cell.king = False
 				cell.color = 'black'
-				cell.get_child().set_from_file("light_box_black_piece.svg")
+				cell.get_child().set_from_file("images/light_box_black_piece.svg")
 			elif kind == "king":
 				cell.king = True
 				cell.color = 'black'
-				cell.get_child().set_from_file("light_box_black_king.svg")
+				cell.get_child().set_from_file("images/light_box_black_king.svg")
 			elif kind == "highlight_regular":
-				cell.get_child().set_from_file("light_box_black_piece_available_white.svg")
+				cell.get_child().set_from_file("images/light_box_black_piece_available_white.svg")
 			elif kind == "highlight_king":
-				cell.get_child().set_from_file("light_box_black_king_available_white.svg")
+				cell.get_child().set_from_file("images/light_box_black_king_available_white.svg")
 			else:
-				cell.get_child().set_from_file("light_box_available_white.svg")
+				cell.get_child().set_from_file("images/light_box_available_white.svg")
 		else:
 			cell.color = 'none'
-			cell.get_child().set_from_file("light_box.svg")
+			cell.get_child().set_from_file("images/light_box.svg")
 
 	def get_checker(self, row, column):
-		cell = self.table.get_children()[(row*8)+column]
+		cell = self.table.get_children()[(row*8)+(column)]
 		return [cell.king, cell.color]
 
 	def update_counter(self, value):
@@ -107,30 +110,31 @@ class CheckersGUI:
 		return self.delete_event(widget)
 
 	def cell_clicked(self, widget, data=None):
-		print "Cell clicked"
+		self.controller.player_click(widget)
+		
 		# clicked checker variables
-		print widget.row
-		print widget.column
+		#print widget.row
+		#print widget.column
 		# player color
-		print widget.color
+		#print widget.color
 		# is king
-		print widget.king
-		self.set_checker(0, 0, None, None)
-		self.set_checker(1, 0, "regular", "white")
-		self.set_checker(1, 1, "king", "white")
-		self.set_checker(1, 2, "highlight_regular", "white")
-		self.set_checker(1, 3, "highlight_king", "white")
-		self.set_checker(1, 4, None, "white")
-		self.set_checker(2, 0, "regular", "black")
-		self.set_checker(2, 1, "king", "black")
-		self.set_checker(2, 2, "highlight_regular", "black")
-		self.set_checker(2, 3, "highlight_king", "black")
-		self.set_checker(2, 4, None, "black")
+		#print widget.king
+		#self.set_checker(0, 0, None, None)
+		#self.set_checker(1, 0, "regular", "white")
+		#self.set_checker(1, 1, "king", "white")
+		#self.set_checker(1, 2, "highlight_regular", "white")
+		#self.set_checker(1, 3, "highlight_king", "white")
+		#self.set_checker(1, 4, None, "white")
+		#self.set_checker(2, 0, "regular", "black")
+		#self.set_checker(2, 1, "king", "black")
+		#self.set_checker(2, 2, "highlight_regular", "black")
+		#self.set_checker(2, 3, "highlight_king", "black")
+		#self.set_checker(2, 4, None, "black")
 		# returns is_king, player_color
-		print self.get_checker(0, 0)
-		self.update_counter(10)
-		self.win()
-		self.change_turn()
+		#print self.get_checker(0, 0)
+		#self.update_counter(10)
+		#self.win()
+		#self.change_turn()
 
 	def delete_event(self, widget, event=None, data=None):
 		print "destroy signal occurred"
@@ -144,7 +148,9 @@ class CheckersGUI:
 		else:
 			return True
 
-	def __init__(self):
+	def __init__(self, controller):
+		self.controller = controller
+
 		self.playing = "whites"
 		self.new_game_button = gtk.Button(_("New Game"))
 		self.exit_button = gtk.Button(_("Exit"))
@@ -160,9 +166,10 @@ class CheckersGUI:
 		self.table = gtk.Table(8, 8, True)
 		self.ebs =  range( 64 )
 		counter = -1
-		blacks = [0, 2, 4, 6, 9, 11, 13, 15, 16, 18, 20, 22]
-		whites = [41, 43, 45, 47, 48, 50, 52, 54, 57, 59, 61, 63]
-		light = False
+		blacks = [1, 3, 5, 7, 8, 10, 12, 14, 17, 19, 21, 23]
+		whites = [40, 42, 44, 46, 49, 51, 53, 55, 56, 58, 60, 62]
+		
+		light = True
 		for i in range(8):
 			light = not light
 			for j in range(8):
@@ -173,17 +180,17 @@ class CheckersGUI:
 				
 				if counter in blacks:
 					if light == True:
-						self.ebs[counter].add(gtk.image_new_from_file('light_box_black_piece.svg'))
+						self.ebs[counter].add(gtk.image_new_from_file('images/light_box_black_piece.svg'))
 					self.ebs[counter].color = 'black'
 				elif counter in whites:
 					if light == True:
-						self.ebs[counter].add(gtk.image_new_from_file('light_box_white_piece.svg'))
+						self.ebs[counter].add(gtk.image_new_from_file('images/light_box_white_piece.svg'))
 					self.ebs[counter].color = 'white'
 				else:
 					if light == True:
-						self.ebs[counter].add(gtk.image_new_from_file('light_box.svg'))
+						self.ebs[counter].add(gtk.image_new_from_file('images/light_box.svg'))
 					else:
-						self.ebs[counter].add(gtk.image_new_from_file('dark_box.svg'))
+						self.ebs[counter].add(gtk.image_new_from_file('images/dark_box.svg'))
 					self.ebs[counter].color = 'none'
 				self.ebs[counter].light = light
 				light = not light
@@ -192,8 +199,8 @@ class CheckersGUI:
 				self.ebs[counter].connect("button_press_event", self.cell_clicked)
 				self.table.attach(self.ebs[counter], j, j+1, i, i+1)
 		
-		self.black_king_image.set_from_file('black_king.svg')
-		self.white_king_image.set_from_file('white_king.svg')
+		self.black_king_image.set_from_file('images/black_king.svg')
+		self.white_king_image.set_from_file('images/white_king.svg')
 		
 		self.left_label.set_markup('<span size="xx-large">0</span>')
 		self.right_label.set_markup('<span size="xx-large">0</span>')
