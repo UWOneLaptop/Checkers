@@ -150,8 +150,21 @@ class Checkers:
 		self.white_player = Player.Human_Player(Player.WHITE)
 		self.black_player = Player.AI_Player(Player.BLACK, self)
 		
+	def set_ai(self, ai_state):
+		ai_active = ai_state
+		if ai_active and ai_color == Player.WHITE:
+			self.white_player = Player.AI_Player(Player.WHITE, self)
+			self.black_player = Player.Human_Player(Player.BLACK)
+		elif ai_active and ai_color == Player.BLACK:
+			self.white_player = Player.Human_Player(Player.WHITE)
+			self.black_player = Player.AI_Player(Player.BLACK, self)
+		else:
+			self.white_player = Player.Human_Player(Player.WHITE)
+			self.black_player = Player.Human_Player(Player.BLACK)
 		
-			
+	def set_ai_color(self, color):
+		ai_color = color
+		self.set_ai(ai_active)
 
 	def main(self):
 		gtk.main()
@@ -165,6 +178,8 @@ class Checkers:
 		self.white_win_count = 0
 		self.black_win_count = 0
 		self.last_clicked = None
+		self.ai_active = False
+		self.ai_color = Player.BLACK
 
 if __name__ == "__main__":
 	checkers = Checkers()

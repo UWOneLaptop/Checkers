@@ -43,17 +43,21 @@ class CheckersGUI:
 	def change_ai(self, widget, data=None):
 		if (self.ai_button.get_active()):
 			self.ai_button.set_label(_("Player vs Player"))
+			self.controller.set_ai(False)
 			self.player_color_button.hide()
 		else:
 			self.ai_button.set_label(_("Player vs PC"))
+			self.controller.set_ai(True)
 			self.player_color_button.show()
 
 	def change_player_color(self, widget, data=None):
 		if (self.player_color_button.get_active()):
 			self.player_color_button.set_label(_("AI Player Color: White"))
+			self.controller.set_ai_color(Player.WHITE)
 			print "White AI player color selected"
 		else:
 			self.player_color_button.set_label(_("AI Player Color: Black"))
+			self.controller.set_ai_color(Player.BLACK)
 			print "Black AI player color selected"
 	
 	def win_color(self, color):
