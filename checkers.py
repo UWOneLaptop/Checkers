@@ -15,29 +15,6 @@ from gettext import gettext as _
 
 class Checkers:
 
-	# The Checkboard object. This stores the state of the board 
-	# and contains functions for manipulating it
-	board = None
-	
-	# The Checkerboard GUI. This displays the game to the user
-	# and takes user input
-	view = None
-
-	# The last point clicked by the user
-	last_clicked = None
-
-	# The state of the game (Black's turn, paused, etc)
-	state = None
-
-	# Player objects that take turns moving against each other
-	# can be AI or human
-	white_player = None
-	black_player = None
-
-	# Win counts for the two players
-	white_win_count = 0
-	black_win_count = 0
-
 	# This method is called when the user clicks a box in the GUI. This could be called at any time,
 	# including times when it is not the players turn. Any human supplied moves come through this
 	# method. The moves are passed on the Human_Player objects to be validated. 
@@ -168,6 +145,7 @@ class Checkers:
 		self.board = CheckerBoard()
 		self.board.printBoard()
 		self.state = GameState(GameState.WhitesTurn)
+		self.last_clicked = None
 		
 		self.white_player = Player.Human_Player(Player.WHITE)
 		self.black_player = Player.AI_Player(Player.BLACK, self)
@@ -186,6 +164,7 @@ class Checkers:
 		self.black_player = Player.AI_Player(Player.BLACK, self)
 		self.white_win_count = 0
 		self.black_win_count = 0
+		self.last_clicked = None
 
 if __name__ == "__main__":
 	checkers = Checkers()

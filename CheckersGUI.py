@@ -8,7 +8,6 @@ import os
 from gettext import gettext as _
 
 class CheckersGUI:
-	controller = None
 
 	def new_game(self, widget, data=None):
 		dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO, _("Are you sure you want to delete the current game?"))
