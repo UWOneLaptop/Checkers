@@ -4,9 +4,10 @@ from Move import Move
 from math import*
 
 class CheckerBoard:
-	board = []
+
 	def __init__(self):
 	#All initialization
+		self.board = []
 		for col in range(8):
 			self.board.append([])
 			for row in range(8):

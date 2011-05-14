@@ -37,7 +37,6 @@ class Checkers:
 	# Win counts for the two players
 	white_win_count = 0
 	black_win_count = 0
-	
 
 	# This method is called when the user clicks a box in the GUI. This could be called at any time,
 	# including times when it is not the players turn. Any human supplied moves come through this
@@ -162,8 +161,19 @@ class Checkers:
 
 					
 					self.view.change_turn_color("blacks")
+	
+	#Start a new game. Create all new objects except the gui (to keep track of score) and the win counts
+	#For the gui use the reset function		
+	def reset_board(self):
+		self.board = CheckerBoard()
+		self.board.printBoard()
+		self.state = GameState(GameState.WhitesTurn)
+		
+		self.white_player = Player.Human_Player(Player.WHITE)
+		self.black_player = Player.AI_Player(Player.BLACK, self)
+		
+		
 			
-
 
 	def main(self):
 		gtk.main()

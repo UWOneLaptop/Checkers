@@ -11,17 +11,35 @@ class CheckersGUI:
 	controller = None
 
 	def new_game(self, widget, data=None):
-		print "Creating new game"
 		dialog = gtk.MessageDialog(self.window, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_YES_NO, _("Are you sure you want to delete the current game?"))
 		dialog.set_title("Checkers 1.0")
 		response = dialog.run()
 		dialog.destroy()
-		if response == gtk.RESPONSE_YES:
-			python = sys.executable
-			os.execl(python, python, * sys.argv)
-			return True
-		else:
+		
+		if response != gtk.RESPONSE_YES:
 			return False
+		
+		else:
+			print "Resetting game"
+			
+			self.playing = "whites"
+			blacks = [1, 3, 5, 7, 8, 10, 12, 14, 17, 19, 21, 23]
+			whites = [40, 42, 44, 46, 49, 51, 53, 55, 56, 58, 60, 62]
+			
+			for col in range(8):
+				for row in range(8):
+					if row < 3 and (col + row) % 2 == 1:
+						self.set_checker(row, col, "regular", "black")
+					elif row > 4 and (col + row) % 2 == 1:
+						self.set_checker(row, col, "regular", "white")
+					elif (col + row) % 2 == 1:
+						self.set_checker(row, col, "open", "light")
+					elif (col + row) % 2 == 0:
+						self.set_checker(row, col, "open", "dark")
+			
+			self.controller.reset_board()
+			
+			return True
 			
 	def change_ai(self, widget, data=None):
 		if (self.ai_button.get_active()):
@@ -33,11 +51,11 @@ class CheckersGUI:
 
 	def change_player_color(self, widget, data=None):
 		if (self.player_color_button.get_active()):
-			self.player_color_button.set_label(_("Player Color: Black"))
-			print "Black player color selected"
+			self.player_color_button.set_label(_("AI Player Color: White"))
+			print "White AI player color selected"
 		else:
-			self.player_color_button.set_label(_("Player Color: White"))
-			print "White player color selected"
+			self.player_color_button.set_label(_("AI Player Color: Black"))
+			print "Black AI player color selected"
 	
 	def win_color(self, color):
 		self.playing =color
@@ -76,7 +94,12 @@ class CheckersGUI:
 	def set_checker(self, row, column, kind=None, player=None):
 		cell = self.table.get_children()[((7-row)*8)+(7-column)]
 		
-		if player == "white":
+		if kind == "open":
+			if player == "light":
+				cell.get_child().set_from_file("images/light_box.svg")
+			if player == "dark":
+				cell.get_child().set_from_file("images/dark_box.svg")
+		elif player == "white":
 			if kind == "regular":
 				cell.king = False
 				cell.color = 'white'
@@ -162,6 +185,7 @@ class CheckersGUI:
 			return False
 		else:
 			return True
+		
 
 	def __init__(self, controller):
 		self.controller = controller
