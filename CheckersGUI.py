@@ -3,8 +3,6 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
-import sys
-import os
 from gettext import gettext as _
 
 import Player
@@ -24,8 +22,8 @@ class CheckersGUI:
 			print "Resetting game"
 			
 			self.playing = "whites"
-			blacks = [1, 3, 5, 7, 8, 10, 12, 14, 17, 19, 21, 23]
-			whites = [40, 42, 44, 46, 49, 51, 53, 55, 56, 58, 60, 62]
+			#blacks = [1, 3, 5, 7, 8, 10, 12, 14, 17, 19, 21, 23]
+			#whites = [40, 42, 44, 46, 49, 51, 53, 55, 56, 58, 60, 62]
 			
 			for col in range(8):
 				for row in range(8):
@@ -241,7 +239,7 @@ class CheckersGUI:
 				self.ebs[counter].light = light
 				light = not light
 				self.ebs[counter].king = False
-				self.ebs[counter].set_events(gtk.gdk.BUTTON_PRESS_MASK)
+				#self.ebs[counter].set_events(gtk.gdk.BUTTON_PRESS_MASK)
 				self.ebs[counter].connect("button_press_event", self.cell_clicked)
 				self.table.attach(self.ebs[counter], j, j+1, i, i+1)
 		

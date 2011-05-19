@@ -13,12 +13,12 @@ class TestGameState(unittest.TestCase):
 
     def testBlacksTurn(self):
         gs = GameState()
-        gs.set_state(BlacksTurn)
+        gs.set_state(gs.BlacksTurn)
         self.assertEqual(gs.get_state(), 2)
 
     def testReset(self):
         gs = GameState()
-        gs.set_state(GameState.BlacksTurn)
+        gs.set_state(gs.BlacksTurn)
         gs.reset()
         self.assertEqual(gs.get_state(), 0)
 

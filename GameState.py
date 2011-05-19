@@ -11,14 +11,15 @@ class GameState():
 	GameIsResumed = 4
 	GameHasEnded = 5
 
-        def __init__(self, state=0):
-                self.state = state
+	def __init__(self, state=0):
+		self.state = state
 
-        def reset(self):
-                self.state = 0
-        
-        def get_state(self):
-                return self.state
-                
-        def set_state(self, state):
-                self.state = state
+	def reset(self):
+		self.state = 0
+	
+	def get_state(self):
+		return self.state
+		
+	def set_state(self, state):
+		self.state = state
+

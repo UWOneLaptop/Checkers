@@ -5,13 +5,11 @@ from GameState import GameState
 from SquareState import SquareState
 from Move import Move
 import Player
+import time
 
 import pygtk
 pygtk.require('2.0')
 import gtk
-import sys
-import os
-from gettext import gettext as _
 
 class Checkers:
 
@@ -46,7 +44,7 @@ class Checkers:
 				self.move(start, end, last_cell, return_code)
 		
 			
-                        #Make AI Move
+			#Make AI Move
 			if self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.AI_Player):
 				self.white_player.turn(self.board, self.state)
 			if self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.AI_Player):
@@ -110,6 +108,9 @@ class Checkers:
 			#If a piece was jumped, remove it from the board
 			if return_code == Move.JUMPED or return_code == Move.JUMP_AVAILABLE or return_code == Move.JUMPED_AND_KINGED:
 				self.view.set_checker((start.column+end.column)/2, (start.row+end.row)/2, "none", "none")
+			if return_code == Move.JUMP_AVAILABLE:
+				gtk.main()
+				time.sleep(1)
 			
 			#If there is no jump availble: next turn
 			if not return_code == Move.JUMP_AVAILABLE:
