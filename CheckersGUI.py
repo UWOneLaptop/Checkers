@@ -3,8 +3,11 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 import sys
 import os
+import time
+import pynotify
 from gettext import gettext as _
 
 class CheckersGUI:
@@ -24,6 +27,8 @@ class CheckersGUI:
 			return False
 			
 	def change_ai(self, widget, data=None):
+		if self.tutorial_playing == True:
+			self.tutorial_stop()
 		if (self.ai_button.get_active()):
 			self.ai_button.set_label(_("Player vs Player"))
 			self.player_color_button.hide()
@@ -32,6 +37,8 @@ class CheckersGUI:
 			self.player_color_button.show()
 
 	def change_player_color(self, widget, data=None):
+		if self.tutorial_playing == True:
+			self.tutorial_stop()
 		if (self.player_color_button.get_active()):
 			self.player_color_button.set_label(_("Player Color: Black"))
 			print "Black player color selected"
@@ -125,6 +132,9 @@ class CheckersGUI:
 		return self.delete_event(widget)
 
 	def cell_clicked(self, widget, data=None):
+		if self.tutorial_playing == True:
+			self.tutorial_stop()
+		
 		self.controller.player_click(widget)
 		
 		# clicked checker variables
@@ -162,8 +172,90 @@ class CheckersGUI:
 			return False
 		else:
 			return True
+	
+	def tutorial_callback(self):
+		if (self.tutorial_playing == True and self.movement < 11):
+			if self.movement == 1 :
+				self.set_checker(5, 4, "highlight_regular", "white")
+			elif self.movement == 2 :
+				self.set_checker(5, 4, "regular", None)
+				self.set_checker(4, 3, "regular", "white")
+				self.change_turn()
+			elif self.movement == 3 :
+				self.set_checker(1, 2, "highlight_regular", "black")
+			elif self.movement == 4 :
+				pynotify.init("Some Application or Title")
+				notification = pynotify.Notification(_("Oh no!"), "", "dialog-warning")
+				notification.show()
+				self.set_checker(1, 2, "regular", None)
+				self.set_checker(2, 3, "regular", None)
+				self.set_checker(3, 4, "regular", "black")
+				self.change_turn()
+			elif self.movement == 5 :
+				self.set_checker(4, 3, "highlight_regular", "white")
+			elif self.movement == 6 :
+				self.set_checker(4, 3, "regular", None)
+				self.set_checker(3, 4, "regular", None)
+				self.set_checker(2, 5, "regular", "white")
+				notification = pynotify.Notification(_("You have taken 1, but why stop there?"), "", "dialog-warning")
+				notification.show()
+			elif self.movement == 7 :
+				self.set_checker(2, 5, "highlight_regular", "white")
+			elif self.movement == 8 :
+				self.set_checker(2, 5, "regular", None)
+				self.set_checker(1, 4, "regular", None)
+				self.set_checker(0, 3, "king", "white")
+				self.change_turn()
+				notification = pynotify.Notification(_("Now that I'm a king I can move like blacks and whites!"), "", "dialog-warning")
+				notification.show()
+		else:
+			self.tutorial_playing = True
+			self.tutorial_ended = True
+			self.movement = 0
+			#prepare board for the tutorial
+			blacks = [1, 5, 10, 12]
+			whites = [19, 26, 42, 44]
+			empties = [3, 7, 8, 14, 17, 21, 23, 40, 46, 49, 51, 53, 55, 56, 58, 60, 62]
+			counter = -1
+			for i in range(8):
+				for j in range(8):
+					counter = counter +1
+					if counter in blacks:
+							self.set_checker(i, j, "regular", "black")
+					elif counter in whites:
+							self.set_checker(i, j, "regular", "white")
+					elif counter in empties:
+							self.set_checker(i, j, "regular", None)
+		
+		self.movement = self.movement + 1
+		
+		if (self.tutorial_playing == False or self.movement >= 10):
+			self.tutorial_stop()
+		return True
+	
+	def tutorial_stop(self):
+		self.tutorial_playing = False
+		gobject.source_remove(self.tutorial_timer)
+		# reset playing color
+		if self.playing == "blacks":
+			self.change_turn()
+		# reset the board
+		blacks = [1, 3, 5, 7, 8, 10, 12, 14, 17, 19, 21, 23]
+		whites = [40, 42, 44, 46, 49, 51, 53, 55, 56, 58, 60, 62]
+		empties = [24, 26, 28, 30, 33, 35, 37, 39]
+		counter = -1
+		for i in range(8):
+			for j in range(8):
+				counter = counter +1
+				if counter in blacks:
+						self.set_checker(i, j, "regular", "black")
+				elif counter in whites:
+						self.set_checker(i, j, "regular", "white")
+				elif counter in empties:
+						self.set_checker(i, j, "regular", None)
 
 	def __init__(self, controller):
+		self.tutorial_playing = False
 		self.controller = controller
 
 		self.playing = "whites"
@@ -244,8 +336,9 @@ class CheckersGUI:
 		self.checkers_box.pack_end(self.p2_box, False, False, 5)
 		self.main_box.pack_start(self.checkers_box, True, True, 5)
 		self.window.add(self.main_box)
-		
 		self.window.show_all()
+		
+		self.tutorial_timer = gobject.timeout_add_seconds(1, self.tutorial_callback)
 
 	def main(self):
 		gtk.main()
