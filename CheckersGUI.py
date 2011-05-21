@@ -338,7 +338,7 @@ class CheckersGUI:
 		self.window.add(self.main_box)
 		self.window.show_all()
 		
-		self.tutorial_timer = gobject.timeout_add_seconds(1, self.tutorial_callback)
+		self.tutorial_timer = gobject.timeout_add_seconds(2, self.tutorial_callback)
 
 	def main(self):
 		gtk.main()
