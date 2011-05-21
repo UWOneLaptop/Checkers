@@ -25,8 +25,7 @@ class Human_Player():
 	# 
 	# Returns a code indicating if the turn is over, and the reason if it is not
 	def turn(self, start, end, board, state):
-		if not board.checkMove(start, end, state):
-			print "returning move invalid"
+		if not board.checkMove(start, end, state, False):
 			return Move.MOVE_INVALID
 
 		return board.move(start, end, state)
@@ -93,7 +92,7 @@ class AI_Player():
 		self.jumpAgain(board, state, return_code, updateGUI)
 
 		board.printBoard()
-		time.sleep(1)
+		time.sleep(0.75)
 		print "AI turn complete"
 
 
