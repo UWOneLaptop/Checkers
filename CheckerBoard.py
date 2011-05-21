@@ -21,7 +21,7 @@ class CheckerBoard:
 		
 	"""
 	This method is used for printing the board in ascii. It is only useful as a debugging tool.
-	Remove for production
+	Comment out for production
 	"""             
 	def printBoard(self):   
 		result = "|---|---|---|---|---|---|---|---|\n"
@@ -47,16 +47,75 @@ class CheckerBoard:
 	# Checks to see if the given move is legal.  
 	# Inputs are two Point objects: the start point and the end point
 	# Pre: 1)start and end are points in the 8*8 board 2)State is correct (either player is playing)
-	def checkMove(self, start, end, game_state):
-		if start.row%2 + start.column%2 != 1 or end.row%2 + end.column%2 !=1:
+	def checkMove(self, start, end, game_state, no_printing):
+		start_piece = self.board[start.row][start.column]
+		if self.board[end.row][end.column] == SquareState.EMPTY:
+			if game_state.get_state() == 1: # white's turn
+				if start_piece == SquareState.WHITE:
+					return self.checkDistance(start, end, True, False, no_printing)
+				elif start_piece == SquareState.WHITEKING:
+					return self.checkDistance(start, end, True, True, no_printing)
+				else:
+					if not no_printing: print "Invalid Move: Not your (white's) piece"
+					return False
+			else: # black's turn
+				if start_piece == SquareState.BLACK:
+					return self.checkDistance(start, end, False, False, no_printing)
+				elif start_piece == SquareState.BLACKKING:
+					return self.checkDistance(start, end, False, True, no_printing)
+				else:
+					if not no_printing: print "Invalid Move: Not your (black's) piece"
+					return False
+		else:
+			if not no_printing: print "Invalid Move: End space is not empty"
 			return False
-		if not (self.board[start.row][start.column]+1)/2 == game_state.get_state() or not self.board[end.row][end.column] == SquareState.EMPTY:
+		
+	def checkDistance(self, start, end, player_flag, king_flag, no_printing):
+		if end.row > 7 or end.row < 0 or end.column > 7 or end.column < 0:
 			return False
-		if not end.column - start.column == abs(end.column - start.column)*(game_state.get_state()*2-3) and not self.board[start.row][start.column] == SquareState.WHITEKING and not self.board[start.row][start.column] == SquareState.BLACKKING:
+		# check if we're moving to the next square
+		if abs(start.row - end.row) == 1 and abs(start.column - end.column) == 1:
+			if king_flag: # kings can go forward and back
+				return True
+			elif player_flag and start.column - end.column == 1: # This is VERY confusing, this should be row ... (~Josh)
+				return True
+			elif (not player_flag) and start.column - end.column == -1:
+				return True
+			else:
+				if not no_printing: print "Invalid Move: Piece going in the wrong direction"
+				return False
+		# check if we're jumping to the next square
+		elif abs(start.row - end.row) == 2 and abs(start.column - end.column) == 2:
+			middle_piece = self.board[(start.row + end.row)/2][(start.column + end.column)/2]
+			if ((player_flag and (middle_piece == SquareState.BLACK or middle_piece == SquareState.BLACKKING)) or
+				((not player_flag) and (middle_piece == SquareState.WHITE or middle_piece == SquareState.WHITEKING))):
+				if king_flag: # kings can jump forward and back
+					return True
+				elif player_flag and start.column - end.column == 2:
+					return True
+				elif (not player_flag) and start.column - end.column == -2:
+					return True
+				else:
+					if not no_printing: print "Invalid Move: Piece jumping in the wrong direction"
+					return False
+			else:
+				if not no_printing: print "Invalid Move: No piece to jump over"
+				return False
+		else:
+			if not no_printing: print "Invalid Move: Piece is not doing an in range diagonal move or jump"
 			return False
-		if abs(end.column - start.column) == 1 and abs(end.row - start.row) == 1 and not self.anyJump(game_state):
-			return True
-		return abs(end.column - start.column) == 2 and abs(end.row - start.row) == 2 and self.board[(start.row + end.row)/2][(start.column + end.column)/2] == 5 - game_state.get_state()*2
+		
+#		if start.row%2 + start.column%2 != 1 or end.row%2 + end.column%2 !=1:
+#			return False
+#		if not (self.board[start.row][start.column]+1)/2 == game_state.get_state() or not self.board[end.row][end.column] == SquareState.EMPTY:
+#			return False
+#		if not end.column - start.column == abs(end.column - start.column)*(game_state.get_state()*2-3) and not self.board[start.row][start.column] == SquareState.WHITEKING and not self.board[start.row][start.column] == SquareState.BLACKKING:
+#			return False
+#		if abs(end.column - start.column) == 1 and abs(end.row - start.row) == 1 and not self.anyJump(game_state):
+#			return True
+#		return abs(end.column - start.column) == 2 and abs(end.row - start.row) == 2 and self.board[(start.row + end.row)/2][(start.column + end.column)/2] == 5 - game_state.get_state()*2
+		
+		
 
 
 	# Makes the given move.  Returns true if the player has another move, else false
@@ -109,7 +168,7 @@ class CheckerBoard:
 			y = int(start.column + (step//4+1)*sin(pi/4+pi/2*step)/abs(sin(pi/4+pi/2*step)))
 			if x <= 7 and x >= 0 and y <= 7 and y >= 0:
 				end = Point(x,y)
-				if self.checkMove(start,end,game_state):
+				if self.checkMove(start,end,game_state,True):
 					possibleMoves.append(end)
 		return possibleMoves
 	

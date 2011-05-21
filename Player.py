@@ -25,8 +25,7 @@ class Human_Player():
 	# 
 	# Returns a code indicating if the turn is over, and the reason if it is not
 	def turn(self, start, end, board, state):
-		if not board.checkMove(start, end, state):
-			print "returning move invalid"
+		if not board.checkMove(start, end, state, False):
 			return Move.MOVE_INVALID
 
 		return board.move(start, end, state)
@@ -88,9 +87,12 @@ class AI_Player():
 		last_cell = board.board[start_best.row][start_best.column]
 		return_code = board.move(start, end, state)
 		self.checkers.move(start, end, last_cell, return_code)
+		# I'd like to refresh the board here
+		#self.view.show_board()
 		self.jumpAgain(board, state, return_code, updateGUI)
 
 		board.printBoard()
+		time.sleep(0.75)
 		print "AI turn complete"
 
 
@@ -136,4 +138,3 @@ class AI_Player():
 			return_code = board.move(start, end, state)
 			if updateGUI:
 				self.checkers.move(start, end, last_cell, return_code)
-				time.sleep(1)
