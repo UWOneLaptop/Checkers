@@ -108,9 +108,9 @@ class Checkers:
 			#If a piece was jumped, remove it from the board
 			if return_code == Move.JUMPED or return_code == Move.JUMP_AVAILABLE or return_code == Move.JUMPED_AND_KINGED:
 				self.view.set_checker((start.column+end.column)/2, (start.row+end.row)/2, "none", "none")
-			if return_code == Move.JUMP_AVAILABLE:
-				gtk.main()
-				time.sleep(1)
+			#if return_code == Move.JUMP_AVAILABLE:
+				#self.view.show_board()
+				#time.sleep(1)
 			
 			#If there is no jump availble: next turn
 			if not return_code == Move.JUMP_AVAILABLE:

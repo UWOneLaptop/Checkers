@@ -88,9 +88,12 @@ class AI_Player():
 		last_cell = board.board[start_best.row][start_best.column]
 		return_code = board.move(start, end, state)
 		self.checkers.move(start, end, last_cell, return_code)
+		# I'd like to refresh the board here
+		#self.view.show_board()
 		self.jumpAgain(board, state, return_code, updateGUI)
 
 		board.printBoard()
+		time.sleep(1)
 		print "AI turn complete"
 
 
@@ -136,4 +139,3 @@ class AI_Player():
 			return_code = board.move(start, end, state)
 			if updateGUI:
 				self.checkers.move(start, end, last_cell, return_code)
-				time.sleep(1)

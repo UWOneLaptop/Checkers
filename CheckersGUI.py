@@ -189,6 +189,8 @@ class CheckersGUI:
 		else:
 			return True
 		
+	def show_board(self):
+		self.window.show_all()
 
 	def __init__(self, controller):
 		self.controller = controller
