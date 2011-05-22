@@ -108,9 +108,6 @@ class Checkers:
 			#If a piece was jumped, remove it from the board
 			if return_code == Move.JUMPED or return_code == Move.JUMP_AVAILABLE or return_code == Move.JUMPED_AND_KINGED:
 				self.view.set_checker((start.column+end.column)/2, (start.row+end.row)/2, "none", "none")
-			#if return_code == Move.JUMP_AVAILABLE:
-				#self.view.show_board()
-				#time.sleep(1)
 			
 			#If there is no jump availble: next turn
 			if not return_code == Move.JUMP_AVAILABLE:
@@ -186,6 +183,9 @@ class Checkers:
 
 	def main(self):
 		gtk.main()
+		if (self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.AI_Player) or
+			self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.AI_Player)):
+				time.sleep(1)
 
 	def __init__(self):
 		self.board = CheckerBoard()

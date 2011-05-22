@@ -202,7 +202,9 @@ class CheckersGUI:
 			return True
 		
 	def show_board(self):
-		self.window.show_all()
+		event = gtk.gdk.Event(gtk.gdk.EXPOSE)
+		emit("expose-event", event)
+
 	
 	def tutorial_callback(self):
 		if (self.tutorial_playing == True and self.movement < 11):
