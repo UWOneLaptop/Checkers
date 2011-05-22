@@ -202,8 +202,7 @@ class CheckersGUI:
 			return True
 		
 	def show_board(self):
-		event = gtk.gdk.Event(gtk.gdk.EXPOSE)
-		emit("expose-event", event)
+		self.window.show_all()
 
 	
 	def tutorial_callback(self):
