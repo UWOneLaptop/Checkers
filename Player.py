@@ -92,7 +92,7 @@ class AI_Player():
 		self.jumpAgain(board, state, return_code, updateGUI)
 
 		board.printBoard()
-		time.sleep(0.75)
+		#time.sleep(0.75)
 		print "AI turn complete"
 
 

@@ -203,6 +203,7 @@ class CheckersGUI:
 		
 	def show_board(self):
 		self.window.show_all()
+
 	
 	def tutorial_callback(self):
 		if (self.tutorial_playing == True and self.movement < 11):
