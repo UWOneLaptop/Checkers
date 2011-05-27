@@ -38,7 +38,6 @@ class Checkers:
 				return_code = self.white_player.turn(start, end, self.board, self.state)
 				self.move(start, end, last_cell, return_code)
 
-				# TODO: Send messages for invalid moves or jumps available
 			elif self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.Human_Player):
 				return_code = self.black_player.turn(start, end, self.board, self.state)
 				self.move(start, end, last_cell, return_code)
@@ -69,11 +68,15 @@ class Checkers:
 				self.view.set_checker(widget.row, widget.column, "highlight_regular", "black")
 				self.last_clicked = Point(widget.row, widget.column)
 			if cell == SquareState.BLACKKING: 
-				self.view.set_checker(widget.row, widget.column, "hilight_king", "black")
+				self.view.set_checker(widget.row, widget.column, "highlight_king", "black")
 				self.last_clicked = Point(widget.row, widget.column)
 	
 		
 	def move(self, start, end, last_cell, return_code):
+		if (self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.AI_Player) or
+			self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.AI_Player)):
+				time.sleep(0) # Delay for AI for lower depths
+		
 		#If the move was not valid, unhighlight the previous cell	
 		if return_code == Move.MOVE_INVALID:
 			if last_cell == SquareState.WHITE:
@@ -109,7 +112,7 @@ class Checkers:
 			if return_code == Move.JUMPED or return_code == Move.JUMP_AVAILABLE or return_code == Move.JUMPED_AND_KINGED:
 				self.view.set_checker((start.column+end.column)/2, (start.row+end.row)/2, "none", "none")
 			
-			#If there is no jump availble: next turn
+			#If there is no jump available: next turn
 			if not return_code == Move.JUMP_AVAILABLE:
 				if self.state.get_state() == GameState.WhitesTurn:
 					self.state.set_state(GameState.BlacksTurn)
@@ -183,9 +186,6 @@ class Checkers:
 
 	def main(self):
 		gtk.main()
-		if (self.state.get_state() == GameState.WhitesTurn and isinstance(self.white_player, Player.AI_Player) or
-			self.state.get_state() == GameState.BlacksTurn and isinstance(self.black_player, Player.AI_Player)):
-				time.sleep(1)
 
 	def __init__(self):
 		self.board = CheckerBoard()

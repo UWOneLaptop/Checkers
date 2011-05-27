@@ -5,3 +5,4 @@ class Move:
 	JUMPED = 3
 	KINGED = 4
 	JUMPED_AND_KINGED = 5
+	MOVE_AVAILABLE = 6
