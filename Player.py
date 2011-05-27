@@ -2,7 +2,6 @@ from Move import Move
 import copy
 from GameState import GameState
 import random
-import time
 
 WHITE = 1
 BLACK = 2
@@ -25,9 +24,8 @@ class Human_Player():
 	# 
 	# Returns a code indicating if the turn is over, and the reason if it is not
 	def turn(self, start, end, board, state):
-		if not board.checkMove(start, end, state, False):
+		if board.checkMove(start, end, state, False) == Move.MOVE_INVALID:
 			return Move.MOVE_INVALID
-
 		return board.move(start, end, state)
 
 
@@ -38,96 +36,48 @@ class AI_Player():
 	
 	color = None
 	checkers = None
+	best_move = None
+	
 	#Constructor
 	def __init__(self, color, checkers):
 		self.color = color
 		self.checkers = checkers
+		self.best_move = None
+		
+	def get_best(self):
+		return self.best_move
+		
+	def set_best(self, best):
+		self.best_move = best
 	
 	def turn(self, board, state):
-		moves = board.getAllMoves(state)
-		if not moves:
-			return
-
-		# variables for finding the best move for this turn
+		
+		# Toughness of CPU
+		depth = 5
+		
+		alpha = -999
+		beta = 999
+		player = True # True means Max, False means Min
 		board_orig = copy.deepcopy(board.board)
-		value_best = -99
-		start_best = 0
-		updateGUI = 0
-
-		# search for the next best move
-		random.shuffle(moves)
-		for move in moves:
-			board.board = copy.deepcopy(board_orig)
-			
-			end = move.pop()
-			start = move.pop()
-			return_code = board.move(start, end, state)
-			self.jumpAgain(board, state, return_code, updateGUI)
-
-			# now play the other player's move
-			if (state.get_state() == 2):
-				state_other = GameState(GameState.WhitesTurn)
-				self.turn_other(board, state_other)
-			elif (state.get_state() == 1):
-				state_other = GameState(GameState.BlacksTurn)
-				self.turn_other(board, state_other)
-			else:
-				print "Invalid player state"
-			
-			value = board.getValue(state)
-			print "The value for this board is: ", value
-			if value > value_best:
-				value_best = value
-				start_best = start
-
+		
+		value_best = self.alphabeta(board, depth, alpha, beta, player, state)
+		
 		# we found it so actually make the move
 		updateGUI = 1
 		board.board = copy.deepcopy(board_orig)
-		print "Choose the move with this value: ", value_best
-		last_cell = board.board[start_best.row][start_best.column]
-		return_code = board.move(start, end, state)
-		self.checkers.move(start, end, last_cell, return_code)
-		# I'd like to refresh the board here
-		#self.view.show_board()
+		[best_start, best_end] = self.get_best()
+		last_cell = board.board[best_start.row][best_start.column]
+		return_code = board.move(best_start, best_end, state)
+		self.checkers.move(best_start, best_end, last_cell, return_code)
 		self.jumpAgain(board, state, return_code, updateGUI)
 
-		board.printBoard()
-		#time.sleep(0.75)
+		#board.printBoard()
+		print "AI chose board value: ", value_best
 		print "AI turn complete"
 
-
-	def turn_other(self, board, state):
-		moves = board.getAllMoves(state)
-		if not moves:
-			return
-
-		# variables for finding the best move for this turn
-		board_orig = copy.deepcopy(board.board)
-		value_best = -99
-		updateGUI = 0
-
-		# search for the next best move
-		for move in moves:
-			board.board = copy.deepcopy(board_orig)
-			
-			end = move.pop()
-			start = move.pop()
-			return_code = board.move(start, end, state)
-			self.jumpAgain(board, state, return_code, updateGUI)
-			
-			value = board.getValue(state)
-			if value > value_best:
-				value_best = value
-
-		# we found it so actually make the move
-		board.board = copy.deepcopy(board_orig)
-		return_code = board.move(start, end, state)
-		self.jumpAgain(board, state, return_code, updateGUI)
-
-		
 	def jumpAgain(self, board, state, return_code, updateGUI):
 		while return_code == Move.JUMP_AVAILABLE:
-			moves = board.getAllMoves(state)
+			moves = board.getAllPlayerMoves(state)
 			if not moves:
 				break
 			move = moves.pop()
@@ -138,3 +88,48 @@ class AI_Player():
 			return_code = board.move(start, end, state)
 			if updateGUI:
 				self.checkers.move(start, end, last_cell, return_code)
+				
+	def alphabeta(self, board, depth, alpha, beta, player, state):
+		if depth == 0 or board.gameOver(state):
+			return board.getValue(state, player)
+		moves = board.getAllPlayerMoves(state)
+		if not moves:
+			return			
+		# variables for finding the best move for this turn
+		board_orig = copy.deepcopy(board.board)
+		updateGUI = 0
+		random.shuffle(moves)
+		[start, end] = moves[0]
+		local_best = [start, end]
+		if player: # If player is true, then it is Max, else Min
+			for move in moves:
+				board.board = copy.deepcopy(board_orig)
+				end = move.pop()
+				start = move.pop()
+				return_code = board.move(start, end, state)
+				self.jumpAgain(board, state, return_code, updateGUI)
+				alpha_new = self.alphabeta(board, depth - 1, alpha, beta, not player, state)
+				if alpha_new > alpha:
+					alpha = alpha_new
+					local_best = [start, end]
+					#print "The new best for", player, " is ", alpha
+				if (beta <= alpha):
+					break
+			self.set_best(local_best)
+			return alpha
+		else:
+			for move in moves:
+				board.board = copy.deepcopy(board_orig)
+				end = move.pop()
+				start = move.pop()
+				return_code = board.move(start, end, state)
+				self.jumpAgain(board, state, return_code, updateGUI)
+				beta_new = self.alphabeta(board, depth - 1, alpha, beta, not player, state)
+				if beta_new < beta:
+					beta = beta_new
+					local_best = [start, end]
+					#print "The new best for", player, " is ", beta
+				if (beta <= alpha):
+					break
+			self.set_best(local_best)
+			return beta
