@@ -1,5 +1,5 @@
-\This is a Checkers Activity for the Sugar OS. More information will be added as the application is developed. 
+This is a Checkers Activity for the Sugar OS. More information will be added as the application is developed. 
 
 Currently a basic version is working. The user plays as white and an AI picks random moves as black. When one player wins the game starts over.
 
-Warning: The checker board is represented as [row][column] internally in CheckerBoard.py and it is represented as [column][row] in the CheckersGUI.
+Note: The checker board is represented as [column][row] internally in CheckerBoard.py and it is represented as [row][column] in the CheckersGUI.
