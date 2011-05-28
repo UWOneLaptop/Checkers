@@ -28,6 +28,14 @@ class CheckerBoard:
 			result +="|\n|---|---|---|---|---|---|---|---|\n"
 		print result
 
+	def printBoardMinimal(self):
+		result = "\n"
+		for row in range(len(self.board)):  
+			result += "|"    
+			for col in range(len(self.board[0])):
+				result += SquareState.printSquareMinimal(self.board[col][row])
+			result +="|\n"
+		print result
 
 	# Returns whether or not the game is over 
 	def gameOver(self, game_state):
@@ -141,7 +149,7 @@ class CheckerBoard:
 		if self.getAllJumps(game_state):
 			jump_available = True
 		
-		#self.printBoard()              
+		#self.printBoardMinimal()              
 
 		if kinged and jumped:
 			return Move.JUMPED_AND_KINGED
@@ -164,7 +172,7 @@ class CheckerBoard:
 			y = int(start.column + (step//4+1)*sin(pi/4+pi/2*step)/abs(sin(pi/4+pi/2*step)))
 			if x <= 7 and x >= 0 and y <= 7 and y >= 0:
 				end = Point(x,y)
-				return_code = self.determineTurn(start,end,game_state,True)
+				return_code = self.checkMove(start,end,game_state,True)
 				if return_code != Move.MOVE_INVALID:
 					if return_code == Move.JUMP_AVAILABLE:
 						jumpMoves.append(end)
@@ -175,8 +183,7 @@ class CheckerBoard:
 		else:
 			return possibleMoves
 	
-	# Pre: Game state is BlacksTurn or WhitesTurn
-	# Returns a list of all possible moves this player can make
+	# Returns a list of all possible moves
 	def getAllMoves(self, game_state):
 		moves = []
 		for row in range(len(self.board)):
@@ -189,7 +196,6 @@ class CheckerBoard:
 							moves.append([start,end])
 		return moves
 	
-	# Pre: Game state is BlacksTurn or WhitesTurn
 	# Returns a list of all possible moves this player can make
 	def getAllPlayerMoves(self, game_state):
 		moves = []
@@ -236,7 +242,7 @@ class CheckerBoard:
 		return jumpMoves
 
 	# Determines the board's value for the AI to choose the best
-	# TODO Fix this to know the game_state of player and if they are MAX / MIN
+	# (Note: the kings are worth 1 because the computer would sacrifice pieces to stop kings)
 	def getValue(self, game_state, player):
 		whiteValue = 0
 		blackValue = 0
@@ -245,11 +251,11 @@ class CheckerBoard:
 				if self.board[row][col] == SquareState.WHITE:
 					whiteValue += 1
 				elif self.board[row][col] == SquareState.WHITEKING:
-					whiteValue += 5
+					whiteValue += 1
 				elif self.board[row][col] == SquareState.BLACK:
 					blackValue += 1
 				elif self.board[row][col] == SquareState.BLACKKING:
-					blackValue += 5
+					blackValue += 1
 		if not player:
 			return whiteValue - blackValue
 		else:
