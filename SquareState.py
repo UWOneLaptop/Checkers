@@ -21,3 +21,11 @@ class SquareState:
 		elif state == SquareState.BLACK and not isWhite: return "|X|"
 		elif state == SquareState.BLACKKING and isWhite: return " K "
 		elif state == SquareState.BLACKKING and not isWhite: return "|K|"
+		
+	@staticmethod
+	def printSquareMinimal(state):
+		if state == SquareState.EMPTY: return " "
+		elif state == SquareState.WHITE: return "o"
+		elif state == SquareState.WHITEKING: return "O"
+		elif state == SquareState.BLACK: return "x"
+		elif state == SquareState.BLACKKING: return "X"

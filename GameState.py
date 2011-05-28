@@ -22,4 +22,12 @@ class GameState():
 		
 	def set_state(self, state):
 		self.state = state
+		
+	def switchPlayer(self):
+		if self.get_state() == 1:
+			self.state = 2
+		elif self.get_state() == 2:
+			self.state = 1
+		else:
+			print "Can't switch player"
 

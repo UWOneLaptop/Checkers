@@ -139,7 +139,7 @@ class Checkers:
 	#For the gui use the reset function		
 	def reset_board(self):
 		self.board = CheckerBoard()
-		self.board.printBoard()
+		self.board.printBoardMinimal()
 		self.state = GameState(GameState.WhitesTurn)
 		self.last_clicked = None
 		

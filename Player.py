@@ -1,6 +1,5 @@
 from Move import Move
 import copy
-from GameState import GameState
 import random
 
 WHITE = 1
@@ -53,7 +52,7 @@ class AI_Player():
 	def turn(self, board, state):
 		
 		# Toughness of CPU
-		depth = 5
+		depth = 2
 		
 		alpha = -999
 		beta = 999
@@ -71,11 +70,13 @@ class AI_Player():
 		self.checkers.move(best_start, best_end, last_cell, return_code)
 		self.jumpAgain(board, state, return_code, updateGUI)
 
-		#board.printBoard()
-		print "AI chose board value: ", value_best
+		#board.printBoardMinimal()
+		print "AI chose board value:", value_best
 		print "AI turn complete"
 
+	# TODO FIX Doesn't stop after a full move
 	def jumpAgain(self, board, state, return_code, updateGUI):
+		
 		while return_code == Move.JUMP_AVAILABLE:
 			moves = board.getAllPlayerMoves(state)
 			if not moves:
@@ -97,6 +98,8 @@ class AI_Player():
 			return			
 		# variables for finding the best move for this turn
 		board_orig = copy.deepcopy(board.board)
+		other_state = copy.deepcopy(state)
+		other_state.switchPlayer()
 		updateGUI = 0
 		random.shuffle(moves)
 		[start, end] = moves[0]
@@ -108,13 +111,16 @@ class AI_Player():
 				start = move.pop()
 				return_code = board.move(start, end, state)
 				self.jumpAgain(board, state, return_code, updateGUI)
-				alpha_new = self.alphabeta(board, depth - 1, alpha, beta, not player, state)
+				alpha_new = self.alphabeta(board, depth - 1, alpha, beta, not player, other_state)
 				if alpha_new > alpha:
 					alpha = alpha_new
 					local_best = [start, end]
 					#print "The new best for", player, " is ", alpha
 				if (beta <= alpha):
 					break
+				board.printBoardMinimal()
+				print "The alpha is", alpha
+			print "The chosen alpha at depth", depth, "is", alpha
 			self.set_best(local_best)
 			return alpha
 		else:
@@ -124,12 +130,16 @@ class AI_Player():
 				start = move.pop()
 				return_code = board.move(start, end, state)
 				self.jumpAgain(board, state, return_code, updateGUI)
-				beta_new = self.alphabeta(board, depth - 1, alpha, beta, not player, state)
+				
+				beta_new = self.alphabeta(board, depth - 1, alpha, beta, not player, other_state)
 				if beta_new < beta:
 					beta = beta_new
 					local_best = [start, end]
 					#print "The new best for", player, " is ", beta
 				if (beta <= alpha):
 					break
+				board.printBoardMinimal()
+				print "The beta is", beta
+			print "The beta chosen at depth", depth, "is", beta
 			self.set_best(local_best)
 			return beta
